@@ -7,11 +7,11 @@
 <svg width="0" height="0" style="position:absolute"><filter id="potd-sharpen"><feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="0 -0.6 0 -0.6 3.4 -0.6 0 -0.6 0"/></filter></svg>
 {% if v_compact and h_compact %}
 <div class="layout gap--none" style="padding:0">
-  <img src="{{ image.image_url }}" class="image image-dither" style="width:100%;height:100%;object-fit:cover;filter:url(#potd-sharpen) grayscale(1) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />
+  <img src="{{ image.image_url }}" class="image image-dither" style="width:100%;height:100%;object-fit:cover;filter:url(#potd-sharpen) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />
 </div>
 {% elsif h_compact %}
 <div class="layout layout--col gap--none" style="padding:0;align-items:stretch">
-  <img src="{{ image.image_url }}" class="image image-dither" style="width:100%;flex:1 1 auto;min-height:0;object-fit:cover;filter:url(#potd-sharpen) grayscale(1) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />
+  <img src="{{ image.image_url }}" class="image image-dither" style="width:100%;flex:1 1 auto;min-height:0;object-fit:cover;filter:url(#potd-sharpen) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />
   <div style="padding:10px 12px 0">
     <span class="title title--small" data-clamp="2">{{ image.title | escape }}</span>
     <span class="label label--small" data-clamp="1">{{ image.credit | escape }}</span>
@@ -19,7 +19,7 @@
 </div>
 {% else %}
 <div class="layout gap--none" style="padding:0;align-items:stretch">
-  <img src="{{ image.image_url }}" class="image image-dither" style="width:{% if v_compact %}58%{% else %}64%{% endif %};height:100%;object-fit:cover;filter:url(#potd-sharpen) grayscale(1) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />
+  <img src="{{ image.image_url }}" class="image image-dither" style="width:{% if v_compact %}58%{% else %}64%{% endif %};height:100%;object-fit:cover;filter:url(#potd-sharpen) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />
   <div style="flex:1;display:flex;flex-direction:column;padding:{% if v_compact %}10px 14px{% else %}18px 20px{% endif %};min-width:0">
     <span class="label label--small">Picture of the day{% if image.date_label != blank %} | {{ image.date_label }}{% endif %}</span>
     {% comment %} lines the title takes in the side column (about 26 characters a line), and the description lines left under it {% endcomment %}
