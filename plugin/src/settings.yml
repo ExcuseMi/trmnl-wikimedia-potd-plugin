@@ -4,7 +4,7 @@ no_screen_padding: 'no'
 dark_mode: 'no'
 static_data: ''
 polling_verb: get
-framework_version: 3.4.0
+framework_version: 3.4.2
 serverless_language: node
 refresh_interval_floor:
 polling_url: https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language={{ language }}
@@ -40,5 +40,5 @@ custom_fields:
   - Francais: fr
   - Espanol: es
 name: Wikimedia Commons Picture of the Day
-description:
+description: A new Wikimedia Commons photo every day, with its story and credit
 refresh_interval: 360
