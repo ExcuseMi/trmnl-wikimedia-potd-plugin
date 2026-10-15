@@ -419,9 +419,11 @@ async function loadDay(date, lang, deadline) {
   // the answer holds only the pages asked for: match them by their name pattern, not by the exact date
   var byTail = function (re) { var k = Object.keys(text).filter(function (t) { return re.test(t); })[0]; return k ? text[k] : ''; };
   var dayPage = byTail(/^Template:Potd\/\d{4}-\d\d-\d\d$/);
-  var fm = /\{\{\s*Potd filename\s*\|\s*([^|}]+)/i.exec(dayPage);
+  // newer pages write `{{Potd filename|1=NAME.jpg <!-- FILENAME HERE ... -->|...}}`: drop comments and the 1=
+  var fm = /\{\{\s*Potd filename\s*\|\s*([^|}]+)/i.exec(dayPage.replace(/<!--[\s\S]*?(-->|$)/g, ''));
   if (!fm) return 'missing';
-  var name = fm[1].trim().replace(/^File:/i, '');
+  var name = fm[1].replace(/^\s*1\s*=/, '').trim().replace(/^File:/i, '');
+  if (!name) return 'missing';
   var capText = byTail(new RegExp(' \\(' + lang + '\\)$')) || byTail(/ \(en\)$/);
   var cm = /\|\s*1=([\s\S]*?)\|\s*2=[\w-]+\s*\|\s*3=/.exec(capText) || /\|\s*1=([\s\S]*?)\}\}/.exec(capText);
   var caption = cm ? cut(wikiPlain(cm[1]), 1000) : '';
@@ -456,7 +458,8 @@ async function runDays(input, mode, state, lang, deadline) {
   var years = today.y - FIRST_YEAR; // 2005 up to last year
   var show = function (img, idx) {
     img = Object.assign({}, img);
-    if (mode === 'archive') { img.position = img.date_label; img.date_label = ''; } else { img.position = (idx + 1) + ' / ' + years; }
+    // the day of the picture is shown in the title bar (or next to the credit); no n / N count (owner 2026-10-15)
+    img.position = mode === 'archive' ? '' : (idx + 1) + ' / ' + years;
     return img;
   };
   // leave time to show the last picture again when picking a new one fails
@@ -473,7 +476,7 @@ async function runDays(input, mode, state, lang, deadline) {
         if (seen.indexOf(date) < 0) break;
       }
       var r = await loadDay(date, lang, pickBy);
-      if (r === null) { debug = 'day ' + date + ': ' + lastFail; break; }
+      if (r === null) { debug = 'day ' + date + ': ' + (lastFail || 'no picture for that day'); break; }
       if (r !== 'missing') { got = r; idx = k; }
     }
     if (got) {
@@ -482,18 +485,22 @@ async function runDays(input, mode, state, lang, deadline) {
       return { image: shown, trmnl_state: { i: idx, last: got.img.id, seen: seen2, pic: snap(shown) } };
     }
   } else if (years >= 1) {
+    var failedYear = -1;
     var start = lastDate && state.i < years ? state.i : -1;
     for (var n = 1; n <= years && !got; n++) {
       var yi = (start + n) % years, yr = FIRST_YEAR + yi;
       var dd = today.m === 2 && today.d === 29 && !isLeap(yr) ? 28 : today.d;
       var r2 = await loadDay(yr + '-' + pad(today.m) + '-' + pad(dd), lang, pickBy);
-      if (r2 === null) { debug = 'day ' + yr + ': ' + lastFail; break; }
+      if (r2 === null) { debug = 'day ' + yr + ': ' + (lastFail || 'no picture for that day'); failedYear = yi; break; }
       if (r2 !== 'missing') { got = r2; idx = yi; }
     }
     if (got) {
       var shown2 = show(got.img, idx);
       return { image: shown2, trmnl_state: { i: idx, last: got.img.id, pic: snap(shown2) } };
     }
+    // nothing new: move past the year that failed, so the next refresh tries the next year (2026-10-15: one bad day
+    // page kept on_this_day on the same picture)
+    if (failedYear >= 0 && state && state.pic) return stale(Object.assign({}, state, { i: failedYear }), '', debug);
   }
   // nothing new: the last picture again (no notice), the state unchanged
   if (state && state.pic) return stale(state, '', debug);

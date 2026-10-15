@@ -37,7 +37,7 @@ function router(h = {}) {
     if (/action=query&titles=Template/.test(u)) {
       const date = decodeURIComponent(new URL(u).searchParams.get('titles').split('|')[0]).replace('Template:Potd/', '');
       body = h.day ? h.day(date) : (archive[date] || synthDay(date));
-    } else if (/action=query&titles=File/.test(u)) body = h.info === undefined ? info : h.info;
+    } else if (/action=query&titles=File/.test(u)) body = h.infoFor ? h.infoFor(u) : h.info === undefined ? info : h.info;
     else if (/wbgetentities&ids=M/.test(u)) body = h.sdc === undefined ? sdc : h.sdc;
     else if (/wikidata\.org/.test(u)) body = h.wd === undefined ? wd : h.wd;
     else if (/rest_v1\/page\/summary/.test(u)) body = h.sum ? h.sum(u) : (/nl\.wikipedia/.test(u) ? sumNl : null);
@@ -111,13 +111,14 @@ test('extract is cut to 1000 characters', async () => {
 
 // ---- archive
 
-test('archive: a random day, the file and caption from the day pages (Dutch caption, else English), date as position', async () => {
+test('archive: a random day, the file and caption from the day pages (Dutch caption, else English), day in date_label, no position', async () => {
   Math.random = () => rnd('2015-06-01');
   const r = router();
   const out = await using(r, () => run(modeIn('archive')), NOW);
   assert.strictEqual(out.image.date, '2015-06-01');
-  assert.strictEqual(out.image.position, '1 Jun 2015');
-  assert.strictEqual(out.image.date_label, '');
+  // the day goes to the title bar instance; no position count for archive (owner 2026-10-15)
+  assert.strictEqual(out.image.date_label, '1 Jun 2015');
+  assert.strictEqual(out.image.position, '');
   assert.strictEqual(out.image.title, 'Een pasgeboren kalf van een roodwitte Holstein-Friesian.');
   assert.match(out.image.image_url, /^https:\/\/thumb\.wikimedia\.org\/.*1280px-[^?]+$/);
   assert.deepStrictEqual({ ...out.trmnl_state, pic: 0 }, { i: out.trmnl_state.i, last: '2015-06-01', seen: ['2015-06-01'], pic: 0 });
@@ -228,4 +229,22 @@ test('deadline spent before the picture: no crash, notice, saved state back', { 
   assert.strictEqual(out.image, null);
   assert.ok(out.notice);
   assert.deepStrictEqual(out.trmnl_state, state);
+});
+
+// 2026-10-15 on a real TRMNL: newer day pages write `{{Potd filename|1=NAME.jpg <!-- FILENAME HERE ... -->|...}}`; the
+// comment and the 1= became part of the file name, the file lookup failed and on_this_day stayed on one picture.
+test('on_this_day: a day page written as 1=NAME with a comment gives the plain file name', async () => {
+  const page = (title, content) => ({ pageid: 1, ns: 10, title, revisions: [{ slots: { main: { content } } }] });
+  const h = { day: (d) => ({ query: { pages: [page('Template:Potd/' + d, `{{Potd filename|1=F_${d}.jpg <!-- FILENAME HERE, e.g. Example.jpg -->|2=x}}`)] } }) };
+  const runs = await otd(Date.UTC(2008, 2, 10, 12), 1, h);
+  const fileUrl = runs[0].urls.find((u) => /titles=File/.test(u));
+  assert.strictEqual(decodeURIComponent(new URL(fileUrl).searchParams.get('titles')), 'File:F_2005-03-10.jpg');
+  assert.ok(runs[0].o.image && runs[0].o.image.image_url);
+});
+
+test('on_this_day: a year whose picture fails is passed over, the next refresh tries the next year', async () => {
+  const h = { infoFor: (u) => (/2006/.test(decodeURIComponent(u)) ? null : info) };
+  const runs = await otd(Date.UTC(2008, 2, 10, 12), 3, h);
+  assert.deepStrictEqual(runs.map((x) => x.o.image.date), ['2005-03-10', '2005-03-10', '2007-03-10']);
+  assert.match(runs[1].o.debug || '', /day 2006/);
 });

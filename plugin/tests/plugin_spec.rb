@@ -220,15 +220,16 @@ RSpec.describe 'Wikimedia Commons Picture of the Day' do
 
     it 'archive: the date is the position, the header carries no second date' do
       page = day_screen('archive')
-      expect(page).to have_css('.label--inverted', text: /\A\d{1,2} [A-Z][a-z]{2} \d{4}\z/)
+      expect(page).to have_css('.title_bar .instance', text: /\A\d{1,2} [A-Z][a-z]{2} \d{4}\z/)
+      expect(page).to have_no_text(%r{\b\d+ / \d+\b})
       expect(page).to have_no_overflow
       expect(page).to have_no_problems
     end
 
-    it 'on_this_day: the header shows the date, the position is n / N over the years' do
+    it 'on_this_day: the title bar shows the day of the picture, no n / N' do
       page = day_screen('on_this_day')
-      expect(page).to have_css('.label--inverted', text: %r{\A1 / \d+\z})
-      expect(page).to have_text(/\b[A-Z][a-z]{2} 2005\b/)
+      expect(page).to have_css('.title_bar .instance', text: /\b[A-Z][a-z]{2} 2005\z/)
+      expect(page).to have_no_text(%r{\b\d+ / \d+\b})
       expect(page).to have_no_problems
     end
   end

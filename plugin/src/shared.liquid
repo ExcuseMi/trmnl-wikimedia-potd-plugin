@@ -12,15 +12,14 @@
 {% assign fit = trmnl.plugin_settings.custom_fields_values.picture_fit | append: "" | downcase %}
 {% if fit != "cover" %}{% assign fit = "contain" %}{% endif %}
 {% if sd == "false" or sd == "no" or sd == "0" or sd == "off" %}{% assign show_desc = false %}{% endif %}
-{% capture hdr %}<div class="flex flex--row flex--between flex--center-y gap--small w--full border--h-black pb--2">
-      <span class="label label--small lg:label--base text--bold">Picture of the day</span>
-      {% if image.date_label != blank %}<span class="label label--small lg:label--base">{{ image.date_label }}</span>{% endif %}
-    </div>{% endcapture %}
+{% assign tb = trmnl.plugin_settings.custom_fields_values.show_title_bar | append: "" | downcase %}
+{% assign show_tb = show_desc %}
+{% if tb == "false" or tb == "no" or tb == "0" or tb == "off" %}{% assign show_tb = false %}{% endif %}
 {% capture foot %}<div class="flex flex--col gap--small w--full pt--2">
       {% if image.notice != blank %}<span class="label label--small lg:label--base" data-notice="1" data-clamp="3">{{ image.notice | escape }}</span>{% endif %}
       <div class="flex flex--row flex--between flex--center-y gap--small w--full">
         <span class="label label--small grow" data-clamp="2">{{ image.credit | escape }}</span>
-        {% unless v_compact %}<span class="label label--small lg:label--base label--inverted rounded--full shrink-0">{{ image.position }}</span>{% endunless %}
+        {% unless v_compact %}{% unless show_tb or image.date_label == blank %}<span class="label label--small lg:label--base label--inverted rounded--full shrink-0">{{ image.date_label }}</span>{% endunless %}{% endunless %}
       </div>
     </div>{% endcapture %}
 {% capture pic %}{% comment %} inline style: no class exists for an image filter (sharpen, contrast, brightness) {% endcomment %}<img src="{{ image.image_url }}" class="image image--{{ fit }} image-dither block w--full h--full" style="filter:url(#potd-sharpen) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />{% endcapture %}
@@ -40,7 +39,7 @@
 <div class="layout layout--col gap--none p--0">
   <div class="stretch-y min-h--0 border--h-black">{{ pic }}</div>
   <div class="flex flex--col flex--left gap--none px--3 py--2">
-    <span class="title title--small">{{ image.title | escape }}</span>
+    <span class="title title--small lg:title--base">{{ image.title | escape }}</span>
     <span class="label label--small lg:label--base" data-clamp="1">{{ image.credit | escape }}</span>
   </div>
 </div>
@@ -52,8 +51,7 @@
   {% comment %} the text block: its content, at most 35% of the height; the picture gets the rest (inline style: the framework has no max-height class) {% endcomment %}
   <div class="flex flex--row gap--large p--3 shrink-0 min-h--0" data-text="1" style="max-height:35cqh;overflow:hidden">
     <div class="flex flex--col flex--top flex--left gap--small self--stretch w--[35cqw] shrink-0">
-      {{ hdr }}
-      <span class="title title--small">{{ image.title | escape }}</span>
+      <span class="title title--small lg:title--base">{{ image.title | escape }}</span>
       <div class="grow"></div>
       {{ foot }}
     </div>
@@ -66,12 +64,19 @@
   <div class="stretch min-w--0 min-h--0 pr--2 portrait:pr--0 portrait:pb--2">{{ pic }}</div>
   <div class="border--v-black shrink-0 portrait:hidden"></div>
   <div class="self--stretch flex flex--col flex--top flex--left gap--small p--3 shrink-0 portrait:w--full w--[{% if v_compact %}40{% else %}35{% endif %}cqw]">
-    {{ hdr }}
-    <span class="title title--small">{{ image.title | escape }}</span>
+    <span class="title title--small lg:title--base">{{ image.title | escape }}</span>
     {{ foot }}
     {% comment %} last in the column: the script measures the space left under the blocks before it {% endcomment %}
     <div class="grow min-h--0 potd-desc"><span class="description lg:description--base" data-clamp="{% if image.flow == 'top' %}6{% else %}12{% endif %}">{{ image.description | escape }}</span></div>
   </div>
+</div>
+{% endif %}
+{% if show_tb %}
+{% comment %} TRMNL's standard title bar: the plugin icon (black, inline: no network on the device) and the name the user gave it {% endcomment %}
+<div class="title_bar">
+  <img class="image" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0Ij4gIDx0aXRsZT5QaWN0dXJlIG9mIHRoZSBEYXk8L3RpdGxlPiAgPCEtLSBwaG90byBmcmFtZSAtLT4gIDxyZWN0IHg9IjQiIHk9IjEyIiB3aWR0aD0iNDYiIGhlaWdodD0iMzgiIHJ4PSI0IiBmaWxsPSIjZmZmZmZmIi8+ICA8cmVjdCB4PSI0IiB5PSIxMiIgd2lkdGg9IjQ2IiBoZWlnaHQ9IjM4IiByeD0iNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjQiLz4gIDwhLS0gc3VuIGFuZCBoaWxscyAtLT4gIDxjaXJjbGUgY3g9IjE4IiBjeT0iMjQiIHI9IjQuNSIgZmlsbD0iIzAwMDAwMCIvPiAgPHBhdGggZD0iTTggNDYgTDIyIDMyIEwzMCA0MCBMMzggMzAgTDQ2IDQwIEw0NiA0NiBaIiBmaWxsPSIjMDAwMDAwIi8+ICA8IS0tIGRheSBiYWRnZSAtLT4gIDxjaXJjbGUgY3g9IjQ4IiBjeT0iNDgiIHI9IjE0IiBmaWxsPSIjMDAwMDAwIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMi41Ii8+ICA8cGF0aCBkPSJNNDggNDEgVjQ4IEw1MyA1MSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+" alt="" />
+  <span class="title">{{ trmnl.plugin_settings.instance_name | default: "Picture of the day" }}</span>
+  {% if image.date_label != blank %}<span class="instance">{{ image.date_label }}</span>{% endif %}
 </div>
 {% endif %}
 <script>
