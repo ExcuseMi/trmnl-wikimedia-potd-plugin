@@ -82,8 +82,8 @@ test('rotate advances and wraps across three runs using the returned state', asy
     const out = await run(withState(three, state, 'rotate'));
     seen.push(out.image.position);
     state = out.trmnl_state;
-    assert.deepStrictEqual(Object.keys(state).sort(), ['i', 'last']);
-    assert.ok(JSON.stringify(state).length < 80 && !/http/.test(JSON.stringify(state)));
+    assert.deepStrictEqual(Object.keys(state).sort(), ['i', 'last', 'pic']);
+    assert.ok(JSON.stringify(state).length < 6000 && !/http/.test(JSON.stringify({ i: state.i, last: state.last })));
   }
   assert.deepStrictEqual(seen, ['1 / 3', '2 / 3', '3 / 3', '1 / 3']);
 });
@@ -156,7 +156,8 @@ test('credit and description come from the Commons metadata call; nothing of it 
     assert.match(url, /titles=File%3APepino_de_mar_/);
     assert.match(url, /iiextmetadatafilter=Artist%7CLicenseShortName%7CImageDescription/);
     assert.match(url, /uselang=nl/);
-    assert.ok(!/Delso|teatfish/.test(JSON.stringify(out.trmnl_state)));
+    // the state holds the last picture (texts cut), but never the long metadata description
+    assert.ok(JSON.stringify(out.trmnl_state).length < 6000 && (out.trmnl_state.pic.description || '').length <= 400);
   } finally { delete globalThis.fetch; globalThis.fetch = async () => { throw new Error('no network in tests'); }; }
 });
 
@@ -208,7 +209,7 @@ for (const [w, h, flow] of [[4000, 2667, 'top'], [2000, 3000, 'side'], [1200, 11
     try {
       const out = await run({ data: atom });
       assert.strictEqual(out.image.flow, flow);
-      assert.ok(!('flow' in (out.trmnl_state || {})) && !('w' in (out.trmnl_state || {})));
+      assert.ok(!('flow' in (out.trmnl_state || {})) && !('w' in (out.trmnl_state || {})) && out.trmnl_state.pic.flow === flow);
     } finally { globalThis.fetch = async () => { throw new Error('no network in tests'); }; }
   });
 }

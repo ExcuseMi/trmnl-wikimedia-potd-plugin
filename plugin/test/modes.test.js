@@ -67,7 +67,7 @@ test('short caption: replaced by the Wikipedia extract (P180 -> sitelink in the 
   assert.ok(r.urls.some((u) => u.includes('ids=M176608093')), r.urls.join('\n'));
   assert.ok(r.urls.some((u) => u.includes('ids=Q158303') && u.includes('sitefilter=nlwiki%7Cenwiki')));
   assert.ok(r.urls.some((u) => u.startsWith('https://nl.wikipedia.org/api/rest_v1/page/summary/Mahonie_(plant)')));
-  assert.ok(!JSON.stringify(out.trmnl_state).includes('Mahonie'));
+  assert.ok(out.trmnl_state.pic.description.length <= 400 && JSON.stringify(out.trmnl_state).length < 6000);
 });
 
 test('long caption stays: no Wikipedia call at all', async () => {
@@ -120,7 +120,7 @@ test('archive: a random day, the file and caption from the day pages (Dutch capt
   assert.strictEqual(out.image.date_label, '');
   assert.strictEqual(out.image.title, 'Een pasgeboren kalf van een roodwitte Holstein-Friesian.');
   assert.match(out.image.image_url, /^https:\/\/thumb\.wikimedia\.org\/.*1280px-[^?]+$/);
-  assert.deepStrictEqual(out.trmnl_state, { i: out.trmnl_state.i, last: '2015-06-01', seen: ['2015-06-01'] });
+  assert.deepStrictEqual({ ...out.trmnl_state, pic: 0 }, { i: out.trmnl_state.i, last: '2015-06-01', seen: ['2015-06-01'], pic: 0 });
   assert.ok(r.urls[0].includes('Template%3APotd%2F2015-06-01'));
   // the very first day has no Dutch page: English, with wiki links reduced to their words
   Math.random = () => rnd('2004-11-29');
@@ -139,7 +139,7 @@ test('archive: no repeat within the last 20 shown, state holds dates only and st
     Math.random = () => (first ? ((first = false), rnd(shown[shown.length - 1])) : lcg());
     const out = await using(router(), () => run(modeIn('archive', state)), NOW);
     shown.push(out.image.date); state = out.trmnl_state;
-    assert.ok(state.seen.length <= 20 && JSON.stringify(state).length < 400 && !/http/.test(JSON.stringify(state)));
+    assert.ok(state.seen.length <= 20 && JSON.stringify(state).length < 6000 && !/http/.test(JSON.stringify(state.seen)));
   }
   for (let i = 0; i < shown.length; i++) assert.ok(!shown.slice(Math.max(0, i - 20), i).includes(shown[i]), 'repeat at ' + i);
 });
@@ -190,7 +190,7 @@ test('on_this_day: one year per refresh in turn from 2005, wrapping; header show
   const runs = await otd(Date.UTC(2008, 2, 10, 12), 4);
   assert.deepStrictEqual(runs.map((x) => x.o.image.position), ['1 / 3', '2 / 3', '3 / 3', '1 / 3']);
   assert.deepStrictEqual(runs.map((x) => x.o.image.date_label), ['10 Mar 2005', '10 Mar 2006', '10 Mar 2007', '10 Mar 2005']);
-  assert.deepStrictEqual(runs[1].o.trmnl_state, { i: 1, last: '2006-03-10' });
+  assert.deepStrictEqual({ ...runs[1].o.trmnl_state, pic: 0 }, { i: 1, last: '2006-03-10', pic: 0 });
 });
 
 test('on_this_day: years without a page are skipped', async () => {
@@ -214,7 +214,7 @@ test('deadline hit midway: the chain stops, the picture and caption stay, the ru
   const r = router({ delay: 1400 });
   const out = await using(r, () => run(modeIn('archive')), undefined);
   const took = Date.now() - t0;
-  assert.ok(took < 4400, 'took ' + took);
+  assert.ok(took < 4600, 'took ' + took);
   assert.ok(out.image, JSON.stringify(out));
   assert.strictEqual(out.image.date, '2015-06-01');
   assert.ok(!r.urls.some((u) => /rest_v1/.test(u)), 'no time left for the summary');
@@ -223,8 +223,8 @@ test('deadline hit midway: the chain stops, the picture and caption stay, the ru
 test('deadline spent before the picture: no crash, notice, saved state back', { timeout: 8000 }, async () => {
   const state = { i: 3, last: '2015-06-01', seen: ['2015-06-01'] };
   const t0 = Date.now();
-  const out = await using(router({ delay: 3500 }), () => run(modeIn('archive', state)), undefined);
-  assert.ok(Date.now() - t0 < 4400, 'took ' + (Date.now() - t0));
+  const out = await using(router({ delay: 6000 }), () => run(modeIn('archive', state)), undefined);
+  assert.ok(Date.now() - t0 < 4700, 'took ' + (Date.now() - t0));
   assert.strictEqual(out.image, null);
   assert.ok(out.notice);
   assert.deepStrictEqual(out.trmnl_state, state);

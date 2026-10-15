@@ -2,9 +2,11 @@
  * Wikimedia Commons Picture of the Day. Source: the featured-feed Atom answer (last 10 days).
  * TRMNL turns an XML answer into JSON; the shape is not documented, so the feed is found by
  * looking for `entry` nodes anywhere in it, and a raw XML string is parsed here as well.
- * State (replaced by what we return, max 8 kB): { i: index shown, last: id (feed modes) or date (archive,
- * on_this_day) shown, seen: last 20 archive dates }. Indices, dates and ids only, no links, no text.
- * One 4 s deadline covers every fetch of a run (DEADLINE_MS); when spent, what we have is shown.
+ * State (replaced by what we return, kept under 6 kB): { i: index shown, last: id (feed modes) or date (archive,
+ * on_this_day) shown, seen: last 20 archive dates, pic: the last good picture (link, texts cut, see snap) }.
+ * The last picture is shown again, without a notice, when a run cannot get a new one.
+ * One 4.5 s deadline covers every fetch of a run (DEADLINE_MS). The feed or day page comes first and gets the time
+ * it needs (FEED_MS); the extras (file metadata, then the Wikipedia chain) start only when enough time is left.
  */
 
 var WIDTH = 1280; // a standard Wikimedia thumbnail step
@@ -188,8 +190,12 @@ function creditLine(author, license) {
   return [author, license, 'Wikimedia Commons'].filter(Boolean).join(', ');
 }
 
-var FETCH_MS = 2000; // one fetch, never longer than the time left of the run
-var DEADLINE_MS = 4000; // the whole run, inside the 5 s budget
+var FETCH_MS = 2000; // one extra fetch, never longer than the time left of the run
+var FEED_MS = 3500; // the feed or the day page: the one fetch a run cannot do without
+var DEADLINE_MS = 4500; // the whole run, inside the 5 s budget
+var META_MIN_MS = 1200; // file metadata (size, credit) starts only with this much time left
+var WIKI_MIN_MS = 2000; // the Wikipedia chain (three to four requests) only with this much left; skipped first
+var lastFail = ''; // why the last getWithTimeout returned null (for the debug key)
 
 function cut(t, max) {
   return t.length > max ? t.slice(0, max - 3).replace(/\s+\S*$/, '') + '...' : t;
@@ -201,9 +207,11 @@ function cut(t, max) {
  * Never stored in the state.
  */
 /** One GET with the 2 s abort; resolves to parsed JSON or text, null on any failure. Never throws. */
-async function getWithTimeout(url, asJson, deadline) {
-  var left = deadline ? Math.min(FETCH_MS, deadline - Date.now()) : FETCH_MS;
-  if (left < 50) return null; // the run's time is spent
+async function getWithTimeout(url, asJson, deadline, cap) {
+  var left = deadline ? Math.min(cap || FETCH_MS, deadline - Date.now()) : (cap || FETCH_MS);
+  if (left < 50) { lastFail = 'no time left'; return null; } // the run's time is spent
+  var t0 = Date.now();
+  lastFail = '';
   var timer, ctl = typeof AbortController === 'function' ? new AbortController() : null;
   try {
     var timeout = new Promise(function (_, reject) {
@@ -211,12 +219,13 @@ async function getWithTimeout(url, asJson, deadline) {
     });
     var work = (async function () {
       var res = await fetch(url, ctl ? { signal: ctl.signal } : undefined);
-      if (!res || res.ok === false) return null;
+      if (!res || res.ok === false) { lastFail = 'status ' + (res && res.status); return null; }
       return asJson ? await res.json() : await res.text();
     })();
     work.catch(function () { /* the race below reports it */ });
     return await Promise.race([work, timeout]);
   } catch (e) {
+    lastFail = (e && e.message === 'timeout' ? 'timeout after ' + (Date.now() - t0) + ' ms' : 'error ' + String(e && e.message).slice(0, 80));
     return null;
   } finally {
     clearTimeout(timer);
@@ -259,19 +268,55 @@ function langOf(input) {
 /** Saved state, or null when missing or garbage. */
 var DATE_RE = /^\d{4}-\d\d-\d\d$/;
 var SEEN_MAX = 20;
+var PIC_DESC = 400; // description kept in the state
+
+/** The last good picture as kept in the state: only what the templates show, texts cut. About 1 kB. */
+function snap(img) {
+  var o = {};
+  ['image_url', 'title', 'credit', 'date', 'date_label', 'position', 'flow', 'w', 'h'].forEach(function (k) {
+    if (img[k] != null && img[k] !== '') o[k] = img[k];
+  });
+  if (img.description) o.description = cut(String(img.description), PIC_DESC);
+  return o;
+}
+
+/** A picture read back from the state: checked field by field, never trusted as it is. */
+function cleanPic(p) {
+  if (!p || typeof p !== 'object' || typeof p.image_url !== 'string' || !/^https:\/\//.test(p.image_url) || p.image_url.length > 400) return null;
+  var str = function (v, max) { return typeof v === 'string' ? v.slice(0, max) : ''; };
+  var out = {
+    image_url: p.image_url, title: str(p.title, 200), credit: str(p.credit, 200), date: str(p.date, 10),
+    date_label: str(p.date_label, 20), position: str(p.position, 40), flow: p.flow === 'top' ? 'top' : 'side',
+    w: Number.isFinite(p.w) ? p.w : null, h: Number.isFinite(p.h) ? p.h : null,
+  };
+  if (typeof p.description === 'string' && p.description) out.description = cut(p.description, PIC_DESC);
+  return out;
+}
 
 function cleanState(s) {
-  if (s && typeof s === 'object' && Number.isInteger(s.i) && s.i >= 0 && typeof s.last === 'string' && s.last.length < 64) {
-    var seen = Array.isArray(s.seen) ? s.seen.filter(function (d) { return typeof d === 'string' && DATE_RE.test(d); }).slice(-SEEN_MAX) : [];
-    return seen.length ? { i: s.i, last: s.last, seen: seen } : { i: s.i, last: s.last };
-  }
-  return null;
+  if (!s || typeof s !== 'object') return null;
+  var pic = cleanPic(s.pic);
+  var ok = Number.isInteger(s.i) && s.i >= 0 && typeof s.last === 'string' && s.last.length < 64;
+  if (!ok && !pic) return null;
+  var out = ok ? { i: s.i, last: s.last } : { i: 0, last: '' };
+  var seen = Array.isArray(s.seen) ? s.seen.filter(function (d) { return typeof d === 'string' && DATE_RE.test(d); }).slice(-SEEN_MAX) : [];
+  if (seen.length) out.seen = seen;
+  if (pic) out.pic = pic;
+  return out;
+}
+
+/** Nothing new this run: the last picture again, no notice; only without one the notice. State and debug as given. */
+function stale(state, notice, debug) {
+  var out = state && state.pic ? { image: Object.assign({}, state.pic), trmnl_state: state }
+    : { image: null, trmnl_state: state || {}, notice: notice };
+  if (debug) out.debug = debug;
+  return out;
 }
 
 function pick(list, mode, state) {
   var n = list.length;
   if (mode === 'rotate') {
-    if (!state) return 0;
+    if (!state || !state.last) return 0;
     var p = list.findIndex(function (x) { return x.id === state.last; });
     return ((p >= 0 ? p : state.i) + 1) % n;
   }
@@ -295,7 +340,7 @@ var SHORT_DESC = 160; // a description shorter than this is replaced by the Wiki
 var FIRST_DAY = Date.UTC(2004, 10, 29); // the first picture of the day on Commons
 var FIRST_YEAR = 2005; // on this day: the first year with a whole run of pages
 var DAY_MS = 86400000;
-var SPENT = 'Wikimedia Commons did not answer in time. This is the last picture again; the next refresh tries a new one.';
+var SPENT = 'Wikimedia Commons did not answer in time. This is the last picture again; the next refresh tries a new one.'; // old states without pic
 
 /** Wikitext of a caption as plain text: links to their label, quotes, templates and tags dropped. */
 function wikiPlain(t) {
@@ -344,7 +389,7 @@ async function describe(img, meta, lang, deadline) {
   if (t && !/(\.\.\.|…)$/.test(t) && img.description && img.description.indexOf(t.replace(/\.$/, '')) === 0) {
     img.description = img.description.slice(t.replace(/\.$/, '').length).replace(/^[\s.,;:]+/, '') || null;
   }
-  if ((!img.description || img.description.length < SHORT_DESC) && meta && meta.pageid) {
+  if ((!img.description || img.description.length < SHORT_DESC) && meta && meta.pageid && deadline - Date.now() >= WIKI_MIN_MS) {
     var ex = await wikiSummary(meta.pageid, lang, deadline);
     if (ex) img.description = ex;
   }
@@ -363,7 +408,7 @@ async function loadDay(date, lang, deadline) {
   var base = 'Template:Potd/' + date;
   var titles = [base, base + ' (' + lang + ')', base + ' (en)'].filter(function (t, i, a) { return a.indexOf(t) === i; });
   var json = await getWithTimeout(COMMONS + '/w/api.php?action=query&titles=' + encodeURIComponent(titles.join('|')) +
-    '&prop=revisions&rvprop=content&rvslots=main&format=json&formatversion=2', true, deadline);
+    '&prop=revisions&rvprop=content&rvslots=main&format=json&formatversion=2', true, deadline, FEED_MS);
   var pages = json && json.query && json.query.pages;
   if (!Array.isArray(pages)) return null;
   var text = {};
@@ -415,7 +460,8 @@ async function runDays(input, mode, state, lang, deadline) {
     return img;
   };
   // leave time to show the last picture again when picking a new one fails
-  var pickBy = lastDate ? deadline - 1200 : deadline;
+  var pickBy = lastDate && !(state && state.pic) ? deadline - 1200 : deadline;
+  var debug = '';
   var got = null, idx = 0, seen = state && state.seen ? state.seen : [];
   if (mode === 'archive') {
     var days = Math.floor((today.ms - DAY_MS - FIRST_DAY) / DAY_MS) + 1;
@@ -427,12 +473,13 @@ async function runDays(input, mode, state, lang, deadline) {
         if (seen.indexOf(date) < 0) break;
       }
       var r = await loadDay(date, lang, pickBy);
-      if (r === null) break;
+      if (r === null) { debug = 'day ' + date + ': ' + lastFail; break; }
       if (r !== 'missing') { got = r; idx = k; }
     }
     if (got) {
       var seen2 = seen.filter(function (d) { return d !== got.img.id; }).concat(got.img.id).slice(-SEEN_MAX);
-      return { image: show(got.img, idx), trmnl_state: { i: idx, last: got.img.id, seen: seen2 } };
+      var shown = show(got.img, idx);
+      return { image: shown, trmnl_state: { i: idx, last: got.img.id, seen: seen2, pic: snap(shown) } };
     }
   } else if (years >= 1) {
     var start = lastDate && state.i < years ? state.i : -1;
@@ -440,21 +487,26 @@ async function runDays(input, mode, state, lang, deadline) {
       var yi = (start + n) % years, yr = FIRST_YEAR + yi;
       var dd = today.m === 2 && today.d === 29 && !isLeap(yr) ? 28 : today.d;
       var r2 = await loadDay(yr + '-' + pad(today.m) + '-' + pad(dd), lang, pickBy);
-      if (r2 === null) break;
+      if (r2 === null) { debug = 'day ' + yr + ': ' + lastFail; break; }
       if (r2 !== 'missing') { got = r2; idx = yi; }
     }
-    if (got) return { image: show(got.img, idx), trmnl_state: { i: idx, last: got.img.id } };
+    if (got) {
+      var shown2 = show(got.img, idx);
+      return { image: shown2, trmnl_state: { i: idx, last: got.img.id, pic: snap(shown2) } };
+    }
   }
-  // nothing new: the last picture again with a notice, the state unchanged
+  // nothing new: the last picture again (no notice), the state unchanged
+  if (state && state.pic) return stale(state, '', debug);
+  // an old state without a picture: fetch the last day again, with a notice
   if (lastDate) {
     var again = await loadDay(lastDate, lang, deadline);
     if (again && again !== 'missing') {
       var im = show(again.img, state.i);
       im.notice = SPENT;
-      return { image: im, trmnl_state: state };
+      return { image: im, trmnl_state: state, debug: debug };
     }
   }
-  return { image: null, trmnl_state: state || {}, notice: 'Wikimedia Commons did not send a picture. The next refresh tries again.' };
+  return stale(state, 'Wikimedia Commons did not send a picture. The next refresh tries again.', debug);
 }
 
 async function run(input) {
@@ -463,23 +515,26 @@ async function run(input) {
   var lang = langOf(input);
   var mode = modeOf(input);
   if (mode === 'archive' || mode === 'on_this_day') return runDays(input, mode, state, lang, deadline);
-  var list = pictures(input);
+  var list = pictures(input), debug = '';
   if (list.length === 0 && !(input && input.data !== undefined)) {
-    // serverless with an empty polling_url: fetch the feed here, in the user's language
-    var feed = await getWithTimeout(COMMONS + '/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language=' + lang, false, deadline);
-    if (typeof feed === 'string') list = pictures({ data: feed });
+    // serverless with an empty polling_url: fetch the feed here, in the user's language. It comes first and gets
+    // the time it needs; everything after it is an extra.
+    var feed = await getWithTimeout(COMMONS + '/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language=' + lang, false, deadline, FEED_MS);
+    if (typeof feed === 'string') {
+      list = pictures({ data: feed });
+      if (list.length === 0) debug = 'feed: no picture in ' + feed.length + ' bytes';
+    } else {
+      debug = 'feed: ' + lastFail;
+    }
   }
   if (list.length === 0) {
-    // The saved state is replaced by what we return: hand it back unchanged
-    return {
-      image: null, trmnl_state: state || {},
-      notice: 'Wikimedia Commons did not send a picture list. The next refresh tries again.',
-    };
+    // The saved state is replaced by what we return: hand it back unchanged; the last picture, else the notice
+    return stale(state, 'Wikimedia Commons did not send a picture list. The next refresh tries again.', debug);
   }
   var idx = pick(list, mode, state);
   var img = Object.assign({}, list[idx], { position: (idx + 1) + ' / ' + list.length, n: idx + 1, total: list.length });
   delete img.sort;
-  var meta = await fileMeta(img.link, lang, deadline);
+  var meta = deadline - Date.now() >= META_MIN_MS ? await fileMeta(img.link, lang, deadline) : null;
   if (meta) {
     img.author = meta.author || img.author;
     img.license = meta.license || img.license;
@@ -489,5 +544,5 @@ async function run(input) {
   // Layout flow: a landscape picture goes on top at full width, others beside the text (never cropped)
   img.flow = img.w && img.h && img.w / img.h >= 1.25 ? 'top' : 'side';
   await describe(img, meta, lang, deadline);
-  return { image: img, trmnl_state: { i: idx, last: list[idx].id } };
+  return { image: img, trmnl_state: { i: idx, last: list[idx].id, pic: snap(img) } };
 }
