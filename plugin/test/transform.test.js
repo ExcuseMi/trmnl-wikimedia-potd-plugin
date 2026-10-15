@@ -54,7 +54,7 @@ test('a long caption is cut to one title line, at the first sentence or a word',
   const sentence = await run({ data: mk('White teatfish at Ras Muhammad. This species of sea cucumber is found in shallow waters near islands and reefs.') });
   assert.strictEqual(sentence.image.title, 'White teatfish at Ras Muhammad.');
   const words = await run({ data: mk('word '.repeat(60)) });
-  assert.ok(words.image.title.length <= 56 && words.image.title.endsWith('...'), words.image.title);
+  assert.ok(words.image.title.length <= 110 && words.image.title.endsWith('...'), words.image.title);
 });
 
 test('credit always names Wikimedia Commons; author and licence only when known', async () => {
@@ -149,8 +149,10 @@ test('credit and description come from the Commons metadata call; nothing of it 
   try {
     const out = await run({ data: atom, trmnl: { plugin_settings: { custom_fields_values: { language: 'nl' } } } });
     assert.strictEqual(out.image.credit, 'Diego Delso, CC BY-SA 4.0, Wikimedia Commons');
-    assert.match(out.image.description, /^White teatfish \(Holothuria fuscogilva\), Ras Muhammad National Park, Red Sea, Egypt\./);
-    assert.ok(out.image.description.length <= 200 && !/[<>]/.test(out.image.description));
+    assert.strictEqual(out.image.title, 'White teatfish (Holothuria fuscogilva), Ras Muhammad National Park, Red Sea, Egypt.');
+    // the title sentence is not repeated at the start of the description
+    assert.match(out.image.description, /^This species of sea cucumber/);
+    assert.ok(out.image.description.length <= 420 && !/[<>]/.test(out.image.description));
     assert.match(url, /titles=File%3APepino_de_mar_/);
     assert.match(url, /iiextmetadatafilter=Artist%7CLicenseShortName%7CImageDescription/);
     assert.match(url, /uselang=nl/);

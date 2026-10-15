@@ -7,7 +7,7 @@
 
 var WIDTH = 1280; // a standard Wikimedia thumbnail step
 var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-var MAX_TITLE = 56;
+var MAX_TITLE = 110; // three title lines in the side column
 var COMMONS = 'https://commons.wikimedia.org';
 
 function decodeEntities(text) {
@@ -210,7 +210,7 @@ async function fileMeta(link, lang) {
     var ext = page && page.imageinfo && page.imageinfo[0] && page.imageinfo[0].extmetadata;
     if (!ext || typeof ext !== 'object') return null;
     var val = function (k) { return ext[k] && typeof ext[k].value === 'string' ? plain(ext[k].value) : ''; };
-    return { author: cut(val('Artist'), 40) || null, license: val('LicenseShortName') || null, description: cut(val('ImageDescription'), 200) || null };
+    return { author: cut(val('Artist'), 40) || null, license: val('LicenseShortName') || null, description: cut(val('ImageDescription'), 420) || null };
   } catch (e) {
     return null;
   } finally {
@@ -275,5 +275,10 @@ async function run(input) {
     img.credit = creditLine(img.author, img.license);
   }
   img.description = (meta && meta.description) || img.caption || null;
+  // the title is the first sentence of the caption: do not repeat it at the start of the description
+  var t = (img.title || '').trim();
+  if (t && !/(\.\.\.|\u2026)$/.test(t) && img.description && img.description.indexOf(t.replace(/\.$/, '')) === 0) {
+    img.description = img.description.slice(t.replace(/\.$/, '').length).replace(/^[\s.,;:]+/, '') || null;
+  }
   return { image: img, trmnl_state: { i: idx, last: list[idx].id } };
 }
