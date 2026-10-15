@@ -71,8 +71,9 @@ RSpec.describe 'Wikimedia Commons Picture of the Day' do
               expect(page).to have_css('[data-credit]', text: CREDIT)
               expect(page).to have_no_text(TITLE)
               expect(page).to have_no_text('Picture of the day')
-              expect(page).to have_no_css('.title_bar')
-              expect(page).to have_no_css('[data-rule], .title, .description, .border--v-black, .border--h-black')
+              # the title bar follows only its own toggle (default on), also with the text off (2026-10-15 on TRMNL)
+              expect(page).to have_css('.title_bar') unless view == 'quadrant'
+              expect(page).to have_no_css('[data-rule], .layout .title, .description, .border--v-black, .border--h-black')
               # layout px: the screen can be zoomed, so rectangles are compared in their own (scaled) units
               box = page.evaluate(<<~JS)
                 (() => {
@@ -88,7 +89,7 @@ RSpec.describe 'Wikimedia Commons Picture of the Day' do
                            sideRoom: (ib.width - dw) / 2 / scale, underRoom: (ib.height - dh) / 2 / scale, boxH: r.height / scale,
                            atCorner: Math.abs(r.right - pic.right) < 2 && Math.abs(r.bottom - pic.bottom) < 2,
                            lines: Math.round(t.offsetHeight / (parseFloat(getComputedStyle(t).lineHeight) || 16)),
-                           texts: [...document.querySelectorAll('.view *')].filter((e) => e.tagName !== 'SCRIPT' && [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())).length };
+                           texts: [...document.querySelectorAll('.view *')].filter((e) => e.tagName !== 'SCRIPT' && !e.closest('.title_bar') && [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())).length };
                 })()
               JS
               expect(box['bg']).to eq('rgb(255, 255, 255)')
@@ -197,6 +198,15 @@ RSpec.describe 'Wikimedia Commons Picture of the Day' do
       expect(shape == 'landscape' ? r['h'] : r['w']).to be > 0.6
       expect(page).to have_no_overflow
     end
+  end
+
+  it 'title bar toggle: text off with the title bar on shows it; both off shows neither' do
+    on = trmnl.render(view: 'full', device: 'og_png', mocks: mocks_for(*PICTURES['landscape']),
+                      custom_fields: custom_fields.merge('show_description' => 'false', 'show_title_bar' => 'true'))
+    expect(on).to have_css('.title_bar')
+    off = trmnl.render(view: 'full', device: 'og_png', mocks: mocks_for(*PICTURES['landscape']),
+                       custom_fields: custom_fields.merge('show_description' => 'false', 'show_title_bar' => 'false'))
+    expect(off).to have_no_css('.title_bar')
   end
 
   it 'draws a rule between the picture and the text of a landscape picture' do

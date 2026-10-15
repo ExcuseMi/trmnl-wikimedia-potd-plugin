@@ -13,7 +13,8 @@
 {% if fit != "cover" %}{% assign fit = "contain" %}{% endif %}
 {% if sd == "false" or sd == "no" or sd == "0" or sd == "off" %}{% assign show_desc = false %}{% endif %}
 {% assign tb = trmnl.plugin_settings.custom_fields_values.show_title_bar | append: "" | downcase %}
-{% assign show_tb = show_desc %}
+{% comment %} the title bar follows only its own toggle (2026-10-15: it was tied to show_description, so text off hid it even when switched on) {% endcomment %}
+{% assign show_tb = true %}
 {% if tb == "false" or tb == "no" or tb == "0" or tb == "off" %}{% assign show_tb = false %}{% endif %}
 {% capture foot %}<div class="flex flex--col gap--small w--full pt--2">
       {% if image.notice != blank %}<span class="label label--small lg:label--base" data-notice="1" data-clamp="3">{{ image.notice | escape }}</span>{% endif %}
