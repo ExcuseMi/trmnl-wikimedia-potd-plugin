@@ -175,9 +175,10 @@ for (const [name, stub] of Object.entries(failures)) {
     try {
       const out = await run({ data: atom });
       assert.strictEqual(out.image.credit, 'Wikimedia Commons');
-      // the summary's caption is the title sentence itself: not repeated, so no description
+      // the feed caption's story after its first sentence (the title), not repeated and not lost (2026-10-15: a
+      // caption cut to its first sentence left no description at all on a real TRMNL)
       assert.strictEqual(out.image.title, 'White teatfish (Holothuria fuscogilva), Ras Muhammad National Park, Red Sea, Egypt.');
-      assert.strictEqual(out.image.description, null);
+      assert.match(out.image.description, /^This species of sea cucumber/);
       assert.ok(Date.now() - t0 < 3500, 'stays inside the 5 s budget');
     } finally { globalThis.fetch = async () => { throw new Error('no network in tests'); }; }
   });
@@ -196,3 +197,18 @@ test('summary author and licence stay when the call lacks them', async () => {
   try { assert.strictEqual((await run({ data: xml })).image.credit, 'Jane Doe, Wikimedia Commons'); }
   finally { globalThis.fetch = async () => { throw new Error('no network in tests'); }; }
 });
+
+// Layout flow from the picture's size: never cropped (2026-10-15: a landscape picture was cut at both sides)
+for (const [w, h, flow] of [[4000, 2667, 'top'], [2000, 3000, 'side'], [1200, 1100, 'side'], [null, null, 'side']]) {
+  test(`picture ${w}x${h}: flow ${flow}`, async () => {
+    const body = JSON.parse(meta);
+    const page = Object.values(body.query.pages)[0];
+    if (w) { page.imageinfo[0].width = w; page.imageinfo[0].height = h; } else { delete page.imageinfo[0].width; delete page.imageinfo[0].height; }
+    globalThis.fetch = okFetch(JSON.stringify(body));
+    try {
+      const out = await run({ data: atom });
+      assert.strictEqual(out.image.flow, flow);
+      assert.ok(!('flow' in (out.trmnl_state || {})) && !('w' in (out.trmnl_state || {})));
+    } finally { globalThis.fetch = async () => { throw new Error('no network in tests'); }; }
+  });
+}

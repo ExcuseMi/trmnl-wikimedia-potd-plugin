@@ -123,6 +123,12 @@ function nameToTitle(file) {
   return n.replace(/\.[A-Za-z0-9]{2,5}$/, '').replace(/_/g, ' ').trim();
 }
 
+/** The whole caption text of the summary (the title is its first sentence). */
+function fullCaption(html) {
+  var m = /<div\b[^>]*class="[^"]*\bdescription\b[^"]*"[^>]*>([\s\S]*?)<\/div>/i.exec(html);
+  return m ? cut(plain(m[1]), 1000) : '';
+}
+
 function caption(html) {
   var m = /<div\b[^>]*class="[^"]*\bdescription\b[^"]*"[^>]*>([\s\S]*?)<\/div>/i.exec(html);
   var t = m ? plain(m[1]) : '';
@@ -160,7 +166,7 @@ function pictures(input) {
     var license = classText(html, 'licen');
     return {
       id: shortId(e.id) || d.date || url, sort: String(e.updated || ''),
-      caption: caption(html) || null,
+      caption: fullCaption(html) || null,
       title: caption(html) || (file ? nameToTitle(file) : plain(e.title)),
       link: file ? COMMONS + '/wiki/' + file : (e.link || COMMONS),
       image_url: url, date: d.date, date_label: d.label,
@@ -193,7 +199,7 @@ async function fileMeta(link, lang) {
     var name = link.replace(/^.*\/wiki\/File:/, '');
     try { name = decodeURIComponent(name); } catch (e) { /* keep as is */ }
     var url = COMMONS + '/w/api.php?action=query&titles=' + encodeURIComponent('File:' + name) +
-      '&prop=imageinfo&iiprop=extmetadata&iiextmetadatafilter=Artist%7CLicenseShortName%7CImageDescription' +
+      '&prop=imageinfo&iiprop=extmetadata%7Csize&iiextmetadatafilter=Artist%7CLicenseShortName%7CImageDescription' +
       '&uselang=' + lang + '&format=json&origin=*';
     var timeout = new Promise(function (_, reject) {
       timer = setTimeout(function () { if (ctl) ctl.abort(); reject(new Error('timeout')); }, FETCH_MS);
@@ -207,10 +213,12 @@ async function fileMeta(link, lang) {
     var json = await Promise.race([work, timeout]);
     var pages = json && json.query && json.query.pages;
     var page = pages && pages[Object.keys(pages)[0]];
-    var ext = page && page.imageinfo && page.imageinfo[0] && page.imageinfo[0].extmetadata;
+    var info = page && page.imageinfo && page.imageinfo[0];
+    var ext = info && info.extmetadata;
     if (!ext || typeof ext !== 'object') return null;
     var val = function (k) { return ext[k] && typeof ext[k].value === 'string' ? plain(ext[k].value) : ''; };
-    return { author: cut(val('Artist'), 40) || null, license: val('LicenseShortName') || null, description: cut(val('ImageDescription'), 1000) || null };
+    return { author: cut(val('Artist'), 40) || null, license: val('LicenseShortName') || null, description: cut(val('ImageDescription'), 1000) || null,
+      w: Number.isFinite(info.width) ? info.width : null, h: Number.isFinite(info.height) ? info.height : null };
   } catch (e) {
     return null;
   } finally {
@@ -273,7 +281,10 @@ async function run(input) {
     img.author = meta.author || img.author;
     img.license = meta.license || img.license;
     img.credit = creditLine(img.author, img.license);
+    img.w = meta.w; img.h = meta.h;
   }
+  // Layout flow: a landscape picture goes on top at full width, others beside the text (never cropped)
+  img.flow = img.w && img.h && img.w / img.h >= 1.25 ? 'top' : 'side';
   img.description = (meta && meta.description) || img.caption || null;
   // the title is the first sentence of the caption: do not repeat it at the start of the description
   var t = (img.title || '').trim();
