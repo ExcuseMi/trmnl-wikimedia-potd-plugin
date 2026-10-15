@@ -1,0 +1,61 @@
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+framework_version: 3.0.3
+serverless_language: node
+refresh_interval_floor:
+polling_url: https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language={{ language }}
+polling_headers: ''
+polling_body: ''
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+oauth_authorize_url: ''
+oauth_token_url: ''
+oauth_scopes: ''
+oauth_scope_separator: ''
+oauth_refresh_url: ''
+oauth_auth_params: ''
+oauth_token_headers: ''
+oauth_token_site: ''
+oauth_token_params: ''
+oauth_token_request_auth_method: ''
+oauth_body_format: ''
+oauth_token_response_metadata: ''
+oauth_authorization_method: ''
+oauth_refresh_params: ''
+oauth_token_field_name: ''
+oauth_expiry_field_name: ''
+oauth_expiry_strategy: ''
+oauth_fixed_expiry_ms: ''
+custom_fields:
+- keyname: author_bio
+  field_type: author_bio
+  name: About This Plugin
+  description: Shows the Wikimedia Commons Picture of the Day, with its caption and date. Can rotate through the last ten pictures.<br />Pictures are credited to Wikimedia Commons; each file has its own licence on its Commons page.
+  category: nature,art
+  github_url:
+  learn_more_url: https://commons.wikimedia.org/wiki/Commons:Picture_of_the_day
+- keyname: mode
+  field_type: select
+  name: Picture Selection
+  default: today
+  options:
+  - Today - the newest picture: today
+  - Rotate - the next picture on each refresh: rotate
+  - Random - a recent picture at random: random
+- keyname: language
+  field_type: select
+  name: Caption Language
+  default: en
+  options:
+  - English: en
+  - Nederlands: nl
+  - Deutsch: de
+  - Francais: fr
+  - Espanol: es
+name: Wikimedia Commons Picture of the Day
+description:
+refresh_interval: 360
