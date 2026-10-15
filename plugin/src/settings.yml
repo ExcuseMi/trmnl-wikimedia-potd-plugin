@@ -27,7 +27,7 @@ custom_fields:
   field_type: select
   name: Which pictures
   default: today
-  help_text: '<b>Today</b>: the newest picture.<br /><b>Last 10 days, in turn</b>: the recent ones, the next at each refresh.<br /><b>Last 10 days, random</b>: one of the recent ones.<br /><b>On this day</b>: this date in an earlier year, a new year at each refresh.<br /><b>Archive</b>: a random day since 2004.'
+  help_text: "<b>Today</b>: the newest picture.<br /><b>Last 10 days, in turn</b>: the recent ones, the next at each refresh.<br /><b>Last 10 days, random</b>: one of the recent ones.<br /><b>On this day</b>: this date in an earlier year, a new year at each refresh.<br /><b>Archive</b>: a random day since 2004."
   options:
   - Today: today
   - Last 10 days, in turn: rotate
@@ -38,7 +38,7 @@ custom_fields:
   field_type: select
   name: Picture fit
   default: contain
-  help_text: '<b>Whole picture</b>: nothing is cut off, empty space may remain.<br /><b>Fill the area</b>: the picture covers its area, the edges are cropped.'
+  help_text: "<b>Whole picture</b>: nothing is cut off, empty space may remain.<br /><b>Fill the area</b>: the picture covers its area, the edges are cropped."
   options:
   - Whole picture: contain
   - Fill the area: cover
@@ -47,13 +47,13 @@ custom_fields:
   name: Show title and description
   default: 'true'
   optional: true
-  help_text: '<b>On</b>: the title and the story of the picture, from the Commons caption, else from Wikipedia.<br /><b>Off</b>: only the picture, with a small credit in a corner.'
+  help_text: "<b>On</b>: the title and the story of the picture, from the Commons caption, else from Wikipedia.<br /><b>Off</b>: only the picture, with a small credit in a corner."
 - keyname: show_title_bar
   field_type: boolean
   name: Show title bar
   default: 'true'
   optional: true
-  help_text: '<b>On</b>: the bar at the bottom with the icon, the name and the day of the picture.<br /><b>Off</b>: the picture and text get that room; the day moves next to the credit.'
+  help_text: "<b>On</b>: the bar at the bottom with the icon, the name and the day of the picture.<br /><b>Off</b>: the picture and text get that room; the day moves next to the credit."
 name: Wikimedia Commons Picture of the Day
 description: Daily Commons photo with its story
 refresh_interval: 360
