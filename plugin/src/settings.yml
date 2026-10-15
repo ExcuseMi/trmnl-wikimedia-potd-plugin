@@ -17,24 +17,27 @@ custom_fields:
 - keyname: author_bio
   field_type: author_bio
   name: About This Plugin
-  description: Shows the Wikimedia Commons Picture of the Day, with its caption and date. Can rotate through the last ten pictures.<br />Pictures are credited to Wikimedia Commons; each file has its own licence on its Commons page.
+  description: Shows the Wikimedia Commons Picture of the Day with its caption. Choose today's picture, the last ten days (in turn or at random), the same date in earlier years, or any day since 2004. The caption language follows your TRMNL account language.<br />Pictures are credited to Wikimedia Commons; each file has its own licence on its Commons page.
   category: nature,art
   github_url:
   learn_more_url: https://commons.wikimedia.org/wiki/Commons:Picture_of_the_day
 - keyname: mode
   field_type: select
-  name: Picture Selection
+  name: Pictures
   default: today
+  help_text: Which picture each refresh shows.
   options:
-  - Today - the newest picture: today
-  - Rotate - the next picture on each refresh: rotate
-  - Random - a recent picture at random: random
+  - Today's picture: today
+  - The last 10 days, one after another: rotate
+  - The last 10 days, at random: random
+  - On this day in earlier years: on_this_day
+  - Any day since 2004 (archive): archive
 - keyname: show_description
   field_type: boolean
-  name: Show Description
-  description: Show the picture's description next to or under the picture. Off gives the picture and title more room.
+  name: Show title and description
   default: 'true'
   optional: true
+  help_text: 'Off: only the picture, with a small credit in a corner. The text comes from the Commons caption, else from Wikipedia.'
 name: Wikimedia Commons Picture of the Day
 description: Daily Commons photo with its story
 refresh_interval: 360

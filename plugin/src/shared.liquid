@@ -14,12 +14,23 @@
       <span class="label label--small text--bold">Picture of the day</span>
       {% if image.date_label != blank %}<span class="label label--small">{{ image.date_label }}</span>{% endif %}
     </div>{% endcapture %}
-{% capture foot %}<div class="flex flex--row flex--between flex--center-y gap--small w--full pt--2">
-      <span class="label label--small grow" data-clamp="2">{{ image.credit | escape }}</span>
-      {% unless v_compact %}<span class="label label--small label--inverted rounded--full shrink-0">{{ image.position }}</span>{% endunless %}
+{% capture foot %}<div class="flex flex--col gap--small w--full pt--2">
+      {% if image.notice != blank %}<span class="label label--small" data-notice="1" data-clamp="3">{{ image.notice | escape }}</span>{% endif %}
+      <div class="flex flex--row flex--between flex--center-y gap--small w--full">
+        <span class="label label--small grow" data-clamp="2">{{ image.credit | escape }}</span>
+        {% unless v_compact %}<span class="label label--small label--inverted rounded--full shrink-0">{{ image.position }}</span>{% endunless %}
+      </div>
     </div>{% endcapture %}
 {% capture pic %}{% comment %} inline style: no class exists for an image filter (sharpen, contrast, brightness) {% endcomment %}<img src="{{ image.image_url }}" class="image image--contain image-dither block w--full h--full" style="filter:url(#potd-sharpen) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />{% endcapture %}
-{% if v_compact and h_compact %}
+{% if show_desc == false %}
+{% comment %} text off: the picture alone, as large as it fits, with the credit in a small white box in a corner {% endcomment %}
+<div class="layout layout--center p--0">
+  <div class="relative w--full h--full">
+    {{ pic }}
+    <div class="absolute bottom--0 right--0 bg--white px--2 py--1" data-credit="1"><span class="label label--small text--black" data-clamp="1">{{ image.credit | escape }}</span></div>
+  </div>
+</div>
+{% elsif v_compact and h_compact %}
 <div class="layout layout--center p--0">
   {{ pic }}
 </div>
@@ -34,29 +45,28 @@
 {% elsif image.flow == 'top' and v_compact == false %}
 {% comment %} a landscape picture: whole, at full width on top; the text under it in two columns {% endcomment %}
 <div class="layout layout--col gap--none p--0">
-  <div class="stretch-y h--[60cqh] shrink-0">{{ pic }}</div>
+  <div class="stretch-y h--[60cqh] shrink-0 pb--2">{{ pic }}</div>
   <div class="border--h-black w--full shrink-0" data-rule="picture"></div>
   <div class="flex flex--row gap--large p--3 stretch-y">
-    <div class="flex flex--col flex--top flex--left gap--small {% if show_desc %}self--stretch w--[35cqw] shrink-0{% else %}stretch{% endif %}">
+    <div class="flex flex--col flex--top flex--left gap--small self--stretch w--[35cqw] shrink-0">
       {{ hdr }}
       <span class="title title--small">{{ image.title | escape }}</span>
       <div class="grow"></div>
       {{ foot }}
     </div>
-    {% if show_desc %}<div class="stretch grow min-w--0 min-h--0 potd-desc"><span class="description">{{ image.description | escape }}</span></div>{% endif %}
+    <div class="stretch grow min-w--0 min-h--0 potd-desc"><span class="description">{{ image.description | escape }}</span></div>
   </div>
 </div>
 {% else %}
 {% comment %} a portrait or square picture (or a half view): whole, beside the text column {% endcomment %}
 <div class="layout gap--none p--0">
-  <div class="stretch min-w--0 min-h--0">{{ pic }}</div>
+  <div class="stretch min-w--0 min-h--0 pr--2">{{ pic }}</div>
   <div class="self--stretch flex flex--col flex--top flex--left gap--small p--3 shrink-0 border--v-black w--[{% if v_compact %}40{% else %}35{% endif %}cqw]">
     {{ hdr }}
     <span class="title title--small">{{ image.title | escape }}</span>
-    {% unless show_desc %}<div class="grow"></div>{% endunless %}
     {{ foot }}
-    {% if show_desc %}{% comment %} last in the column: the script measures the space left under the blocks before it {% endcomment %}
-    <div class="grow min-h--0 potd-desc"><span class="description">{{ image.description | escape }}</span></div>{% endif %}
+    {% comment %} last in the column: the script measures the space left under the blocks before it {% endcomment %}
+    <div class="grow min-h--0 potd-desc"><span class="description">{{ image.description | escape }}</span></div>
   </div>
 </div>
 {% endif %}

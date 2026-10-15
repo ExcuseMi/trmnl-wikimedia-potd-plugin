@@ -58,10 +58,33 @@ RSpec.describe 'Wikimedia Commons Picture of the Day' do
             end
 
             it 'shows title and credit where there is room for text' do
-              next if view == 'quadrant'
+              next if view == 'quadrant' || show == 'false'
 
               expect(page).to have_text(TITLE)
               expect(page).to have_text(CREDIT)
+            end
+
+            it 'with the text off: only the picture and a credit box in a corner, no header, title, rule or column' do
+              next unless show == 'false'
+
+              page.has_css?('img.image') # wait for the page
+              expect(page).to have_css('[data-credit]', text: CREDIT)
+              expect(page).to have_no_text(TITLE)
+              expect(page).to have_no_text('Picture of the day')
+              expect(page).to have_no_css('[data-rule], .title, .description, .border--v-black, .border--h-black')
+              box = page.evaluate(<<~JS)
+                (() => {
+                  const b = document.querySelector('[data-credit]'), t = b.firstElementChild;
+                  const i = document.querySelector('img.image').getBoundingClientRect(), r = b.getBoundingClientRect();
+                  return { bg: getComputedStyle(b).backgroundColor, fg: getComputedStyle(t).color,
+                           corner: Math.abs(r.right - i.right) < 2 && Math.abs(r.bottom - i.bottom) < 2,
+                           texts: [...document.querySelectorAll('.view *')].filter((e) => e.tagName !== 'SCRIPT' && [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())).length };
+                })()
+              JS
+              expect(box['bg']).to eq('rgb(255, 255, 255)')
+              expect(box['fg']).to eq('rgb(0, 0, 0)')
+              expect(box['corner']).to be(true)
+              expect(box['texts']).to eq(1)
             end
 
             it 'has no overflow and no page errors' do
@@ -124,5 +147,34 @@ RSpec.describe 'Wikimedia Commons Picture of the Day' do
   it 'draws a rule between the picture and the text of a landscape picture' do
     page = screen('full', 'og_png', 'landscape', 'true')
     expect(page).to have_css('[data-rule=picture]')
+  end
+
+  # The day modes: the position label is the date (archive) or "n / N" over the years (on_this_day, header = that date)
+  describe 'the day modes' do
+    let(:day_mocks) do
+      {
+        %r{titles=Template} => { json: JSON.parse(File.read(File.join(__dir__, 'fixtures', 'archive-2015-06-01.json'))) },
+        %r{titles=File} => { json: JSON.parse(File.read(File.join(__dir__, 'fixtures', 'mahonia-info.json'))) },
+        %r{wbgetentities} => { json: { 'entities' => {} } }
+      }
+    end
+
+    def day_screen(mode)
+      trmnl.render(view: 'full', device: 'og_png', mocks: day_mocks, custom_fields: { 'mode' => mode, 'show_description' => 'true' })
+    end
+
+    it 'archive: the date is the position, the header carries no second date' do
+      page = day_screen('archive')
+      expect(page).to have_css('.label--inverted', text: /\A\d{1,2} [A-Z][a-z]{2} \d{4}\z/)
+      expect(page).to have_no_overflow
+      expect(page).to have_no_problems
+    end
+
+    it 'on_this_day: the header shows the date, the position is n / N over the years' do
+      page = day_screen('on_this_day')
+      expect(page).to have_css('.label--inverted', text: %r{\A1 / \d+\z})
+      expect(page).to have_text(/\b[A-Z][a-z]{2} 2005\b/)
+      expect(page).to have_no_problems
+    end
   end
 end
