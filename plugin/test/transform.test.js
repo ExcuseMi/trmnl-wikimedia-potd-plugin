@@ -175,7 +175,9 @@ for (const [name, stub] of Object.entries(failures)) {
     try {
       const out = await run({ data: atom });
       assert.strictEqual(out.image.credit, 'Wikimedia Commons');
-      assert.match(out.image.description, /^White teatfish/); // the summary's caption
+      // the summary's caption is the title sentence itself: not repeated, so no description
+      assert.strictEqual(out.image.title, 'White teatfish (Holothuria fuscogilva), Ras Muhammad National Park, Red Sea, Egypt.');
+      assert.strictEqual(out.image.description, null);
       assert.ok(Date.now() - t0 < 3500, 'stays inside the 5 s budget');
     } finally { globalThis.fetch = async () => { throw new Error('no network in tests'); }; }
   });
