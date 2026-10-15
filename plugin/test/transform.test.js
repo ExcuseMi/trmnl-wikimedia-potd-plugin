@@ -152,7 +152,7 @@ test('credit and description come from the Commons metadata call; nothing of it 
     assert.strictEqual(out.image.title, 'White teatfish (Holothuria fuscogilva), Ras Muhammad National Park, Red Sea, Egypt.');
     // the title sentence is not repeated at the start of the description
     assert.match(out.image.description, /^This species of sea cucumber/);
-    assert.ok(out.image.description.length <= 420 && !/[<>]/.test(out.image.description));
+    assert.ok(out.image.description.length <= 1000 && !/[<>]/.test(out.image.description));
     assert.match(url, /titles=File%3APepino_de_mar_/);
     assert.match(url, /iiextmetadatafilter=Artist%7CLicenseShortName%7CImageDescription/);
     assert.match(url, /uselang=nl/);

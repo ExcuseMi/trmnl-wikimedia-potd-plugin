@@ -4,13 +4,14 @@
   <span class="description">{{ notice | default: "No picture available right now. The next refresh tries again." }}</span>
 </div>
 {% else %}
+<svg width="0" height="0" style="position:absolute"><filter id="potd-sharpen"><feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="0 -0.6 0 -0.6 3.4 -0.6 0 -0.6 0"/></filter></svg>
 {% if v_compact and h_compact %}
 <div class="layout gap--none" style="padding:0">
-  <img src="{{ image.image_url }}" class="image image-dither" style="width:100%;height:100%;object-fit:cover;filter:contrast(1.25)" alt="{{ image.title | escape }}" />
+  <img src="{{ image.image_url }}" class="image image-dither" style="width:100%;height:100%;object-fit:cover;filter:url(#potd-sharpen) grayscale(1) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />
 </div>
 {% elsif h_compact %}
 <div class="layout layout--col gap--none" style="padding:0;align-items:stretch">
-  <img src="{{ image.image_url }}" class="image image-dither" style="width:100%;flex:1 1 auto;min-height:0;object-fit:cover;filter:contrast(1.25)" alt="{{ image.title | escape }}" />
+  <img src="{{ image.image_url }}" class="image image-dither" style="width:100%;flex:1 1 auto;min-height:0;object-fit:cover;filter:url(#potd-sharpen) grayscale(1) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />
   <div style="padding:10px 12px 0">
     <span class="title title--small" data-clamp="2">{{ image.title | escape }}</span>
     <span class="label label--small" data-clamp="1">{{ image.credit | escape }}</span>
@@ -18,12 +19,14 @@
 </div>
 {% else %}
 <div class="layout gap--none" style="padding:0;align-items:stretch">
-  <img src="{{ image.image_url }}" class="image image-dither" style="width:{% if v_compact %}58%{% else %}64%{% endif %};height:100%;object-fit:cover;filter:contrast(1.25)" alt="{{ image.title | escape }}" />
+  <img src="{{ image.image_url }}" class="image image-dither" style="width:{% if v_compact %}58%{% else %}64%{% endif %};height:100%;object-fit:cover;filter:url(#potd-sharpen) grayscale(1) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />
   <div style="flex:1;display:flex;flex-direction:column;padding:{% if v_compact %}10px 14px{% else %}18px 20px{% endif %};min-width:0">
     <span class="label label--small">Picture of the day{% if image.date_label != blank %} | {{ image.date_label }}{% endif %}</span>
-    <span class="title{% unless v_compact %} title--small{% endunless %}" style="margin-top:6px" data-clamp="{% if v_compact %}1{% else %}4{% endif %}">{{ image.title | escape }}</span>
+    {% comment %} lines the title takes in the side column (about 26 characters a line), and the description lines left under it {% endcomment %}
+    {% assign tl = image.title.size | divided_by: 26 | plus: 1 %}{% if v_compact %}{% if tl > 2 %}{% assign tl = 2 %}{% endif %}{% assign dl = tl | times: 22 | minus: 185 | times: -1 | divided_by: 14 %}{% else %}{% if tl > 4 %}{% assign tl = 4 %}{% endif %}{% assign dl = tl | times: 22 | minus: 420 | times: -1 | divided_by: 15 %}{% endif %}{% if dl < 1 %}{% assign dl = 1 %}{% endif %}
+    <span class="title title--small" style="margin-top:6px" data-clamp="{{ tl }}">{{ image.title | escape }}</span>
     {% if image.description != blank %}
-    <span class="description" style="margin-top:10px" data-clamp="{% if v_compact %}3{% else %}14{% endif %}">{{ image.description | escape }}</span>
+    <span class="description" style="margin-top:10px" data-clamp="{{ dl }}">{{ image.description | escape }}</span>
     {% endif %}
     <div style="margin-top:auto">
       <span class="label label--small" data-clamp="2">{{ image.credit | escape }}</span>

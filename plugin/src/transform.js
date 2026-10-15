@@ -210,7 +210,7 @@ async function fileMeta(link, lang) {
     var ext = page && page.imageinfo && page.imageinfo[0] && page.imageinfo[0].extmetadata;
     if (!ext || typeof ext !== 'object') return null;
     var val = function (k) { return ext[k] && typeof ext[k].value === 'string' ? plain(ext[k].value) : ''; };
-    return { author: cut(val('Artist'), 40) || null, license: val('LicenseShortName') || null, description: cut(val('ImageDescription'), 420) || null };
+    return { author: cut(val('Artist'), 40) || null, license: val('LicenseShortName') || null, description: cut(val('ImageDescription'), 1000) || null };
   } catch (e) {
     return null;
   } finally {
