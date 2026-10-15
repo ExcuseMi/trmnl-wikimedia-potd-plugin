@@ -40,5 +40,5 @@ custom_fields:
   - Francais: fr
   - Espanol: es
 name: Wikimedia Commons Picture of the Day
-description: A new Wikimedia Commons photo every day, with its story and credit
+description: Daily Commons photo with its story
 refresh_interval: 360

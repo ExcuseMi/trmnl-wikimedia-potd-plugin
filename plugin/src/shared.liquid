@@ -25,18 +25,40 @@
       <span class="label label--small" style="text-transform:uppercase;letter-spacing:1.5px;font-weight:700">Picture of the day</span>
       {% if image.date_label != blank %}<span class="label label--small">{{ image.date_label }}</span>{% endif %}
     </div>
-    {% comment %} lines the title takes in the side column (about 26 characters a line), and the description lines left under it {% endcomment %}
-    {% assign tl = image.title.size | divided_by: 26 | plus: 1 %}{% if v_compact %}{% if tl > 2 %}{% assign tl = 2 %}{% endif %}{% assign dl = tl | times: 22 | minus: 150 | times: -1 | divided_by: 14 %}{% else %}{% if tl > 4 %}{% assign tl = 4 %}{% endif %}{% assign dl = tl | times: 22 | minus: 370 | times: -1 | divided_by: 15 %}{% endif %}{% if dl < 1 %}{% assign dl = 1 %}{% endif %}
-    <span class="title title--small" style="margin-top:12px;line-height:1.2" data-clamp="{{ tl }}">{{ image.title | escape }}</span>
+    <span class="title title--small" style="margin-top:12px;line-height:1.2">{{ image.title | escape }}</span>
     {% if image.description != blank %}
-    <span class="description" style="margin-top:10px;line-height:1.35" data-clamp="{{ dl }}">{{ image.description | escape }}</span>
+    <div class="potd-desc" style="flex:1 1 auto;min-height:0;overflow:hidden;margin-top:10px">
+      <span class="description" style="line-height:1.35;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden">{{ image.description | escape }}</span>
+    </div>
+    {% else %}
+    <div style="flex:1 1 auto"></div>
     {% endif %}
-    <div style="margin-top:auto;padding-top:8px;border-top:1px solid #000;display:flex;justify-content:space-between;align-items:center;gap:8px">
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #000;display:flex;justify-content:space-between;align-items:center;gap:8px">
       <span class="label label--small" style="min-width:0" data-clamp="2">{{ image.credit | escape }}</span>
       {% unless v_compact %}<span class="label label--small" style="background:#000;color:#fff;padding:2px 8px;border-radius:10px;white-space:nowrap">{{ image.position }}</span>{% endunless %}
     </div>
   </div>
 </div>
 {% endif %}
+<script>
+// Fit the description to the height left under the title on this screen: whole lines only, then an ellipsis.
+// Measured again once the fonts are in, since the title's height changes with them.
+(function () {
+  function fit() {
+    document.querySelectorAll('.potd-desc').forEach(function (box) {
+      var t = box.firstElementChild;
+      t.style.webkitLineClamp = 'unset';
+      t.style.maxHeight = 'none';
+      var lh = parseFloat(getComputedStyle(t).lineHeight) || 16;
+      var n = Math.max(1, Math.floor((box.getBoundingClientRect().height + 1) / lh));
+      t.style.webkitLineClamp = String(n);
+      t.style.maxHeight = (n * lh) + 'px';
+    });
+  }
+  fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  window.addEventListener('load', fit);
+})();
+</script>
 {% endunless %}
 {% endtemplate %}
