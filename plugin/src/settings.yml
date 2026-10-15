@@ -6,7 +6,7 @@ static_data: ''
 polling_verb: get
 framework_version: 3.4.2
 serverless_language: node
-refresh_interval_floor:
+refresh_interval_floor: 5
 polling_url: |-
   {% if mode == 'archive' or mode == 'on_this_day' %}{% else %}{% assign l = trmnl.user.locale | slice: 0, 2 | downcase %}{% if l == blank %}{% assign l = 'en' %}{% endif %}https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language={{ l }}{% if l != 'en' %}
   https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language=en{% endif %}{% endif %}
