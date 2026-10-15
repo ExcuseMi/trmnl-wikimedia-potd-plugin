@@ -56,4 +56,4 @@ custom_fields:
   help_text: "<b>On</b>: the bar at the bottom with the icon, the name and the day of the picture.<br /><b>Off</b>: the picture and text get that room; the day moves next to the credit."
 name: Wikimedia Commons Picture of the Day
 description: Daily Commons photo with its story
-refresh_interval: 360
+refresh_interval: 5
