@@ -6,10 +6,8 @@ static_data: ''
 polling_verb: get
 framework_version: 3.4.2
 serverless_language: node
-refresh_interval_floor: 5
-polling_url: |-
-  {% if mode == 'archive' or mode == 'on_this_day' %}{% else %}{% assign l = trmnl.user.locale | slice: 0, 2 | downcase %}{% if l == blank %}{% assign l = 'en' %}{% endif %}https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language={{ l }}{% if l != 'en' %}
-  https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language=en{% endif %}{% endif %}
+refresh_interval_floor: '5'
+polling_url: "{% if mode == 'archive' or mode == 'on_this_day' %}{% else %}{% assign l = trmnl.user.locale | slice: 0, 2 | downcase %}{% if l == blank %}{% assign l = 'en' %}{% endif %}https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language={{ l }}{% if l != 'en' %}\r\nhttps://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language=en{% endif %}{% endif %}"
 polling_headers: ''
 polling_body: ''
 id: 507499
@@ -56,4 +54,4 @@ custom_fields:
   help_text: "<b>On</b>: the bar at the bottom with the icon, the name and the day of the picture.<br /><b>Off</b>: the picture and text get that room; the day moves next to the credit."
 name: Wikimedia Commons Picture of the Day
 description: Daily Commons photo with its story
-refresh_interval: 15
+refresh_interval: 5
