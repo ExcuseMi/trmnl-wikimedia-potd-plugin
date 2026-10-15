@@ -147,7 +147,7 @@ test('credit and description come from the Commons metadata call; nothing of it 
   let url;
   globalThis.fetch = async (u) => { url = u; return okFetch(meta)(); };
   try {
-    const out = await run({ data: atom, trmnl: { plugin_settings: { custom_fields_values: { language: 'nl' } } } });
+    const out = await run({ data: atom, trmnl: { user: { locale: 'nl' } } });
     assert.strictEqual(out.image.credit, 'Diego Delso, CC BY-SA 4.0, Wikimedia Commons');
     assert.strictEqual(out.image.title, 'White teatfish (Holothuria fuscogilva), Ras Muhammad National Park, Red Sea, Egypt.');
     // the title sentence is not repeated at the start of the description
@@ -212,3 +212,30 @@ for (const [w, h, flow] of [[4000, 2667, 'top'], [2000, 3000, 'side'], [1200, 11
     } finally { globalThis.fetch = async () => { throw new Error('no network in tests'); }; }
   });
 }
+
+// Language comes from the user's TRMNL locale; the feed and the metadata call use the same one
+for (const [locale, want] of [['nl', 'nl'], ['nl-BE', 'nl'], ['pt_BR', 'pt'], ['NL', 'nl'], ['xx', 'en'], ['', 'en'], [undefined, 'en']]) {
+  test(`locale ${JSON.stringify(locale)} asks Commons for ${want}`, async () => {
+    const urls = [];
+    globalThis.fetch = async (u) => {
+      urls.push(String(u));
+      if (/featuredfeed/.test(u)) return { ok: true, text: async () => atom };
+      return okFetch(meta)();
+    };
+    try {
+      const out = await run({ trmnl: { user: locale === undefined ? {} : { locale } } });
+      assert.ok(out.image, JSON.stringify(out));
+      assert.ok(urls.some((u) => u.includes('featuredfeed') && u.endsWith('language=' + want)), urls.join('\n'));
+      assert.ok(urls.some((u) => u.includes('uselang=' + want + '&')), urls.join('\n'));
+    } finally { globalThis.fetch = async () => { throw new Error('no network in tests'); }; }
+  });
+}
+
+test('feed fetch fails or is slow: a notice, the saved state back, no crash', async () => {
+  globalThis.fetch = () => new Promise(() => {});
+  try {
+    const out = await run({ trmnl: { state: { i: 2, last: 'x' } } });
+    assert.strictEqual(out.image, null);
+    assert.deepStrictEqual(out.trmnl_state, { i: 2, last: 'x' });
+  } finally { globalThis.fetch = async () => { throw new Error('no network in tests'); }; }
+});

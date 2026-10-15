@@ -4,83 +4,59 @@
   <span class="description">{{ notice | default: "No picture available right now. The next refresh tries again." }}</span>
 </div>
 {% else %}
+{% comment %} inline style: the hidden SVG filter definition has no class; the picture filter below refers to it {% endcomment %}
 <svg width="0" height="0" style="position:absolute"><filter id="potd-sharpen"><feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="0 -0.6 0 -0.6 3.4 -0.6 0 -0.6 0"/></filter></svg>
-{% capture hdr %}<div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #000;padding-bottom:5px;gap:10px">
-      <span class="label label--small" style="text-transform:uppercase;letter-spacing:1.5px;font-weight:700">Picture of the day</span>
+{% comment %} show_description arrives as true, "true", false or "false" (or yes/no); missing means on {% endcomment %}
+{% assign sd = trmnl.plugin_settings.custom_fields_values.show_description | append: "" | downcase %}
+{% assign show_desc = true %}
+{% if sd == "false" or sd == "no" or sd == "0" or sd == "off" %}{% assign show_desc = false %}{% endif %}
+{% capture hdr %}<div class="flex flex--row flex--between flex--center-y gap--small w--full border--h-black pb--2">
+      <span class="label label--small text--bold">Picture of the day</span>
       {% if image.date_label != blank %}<span class="label label--small">{{ image.date_label }}</span>{% endif %}
     </div>{% endcapture %}
-{% capture desc %}{% if image.description != blank %}<div class="potd-desc" style="flex:1 1 auto;min-height:0;overflow:hidden;margin-top:8px">
-      <span class="description" style="line-height:1.35;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden">{{ image.description | escape }}</span>
-    </div>{% else %}<div style="flex:1 1 auto"></div>{% endif %}{% endcapture %}
-{% capture foot %}<div style="margin-top:8px;padding-top:6px;border-top:1px solid #000;display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <span class="label label--small" style="min-width:0" data-clamp="2">{{ image.credit | escape }}</span>
-      {% unless v_compact %}<span class="label label--small" style="background:#000;color:#fff;padding:2px 8px;border-radius:10px;white-space:nowrap">{{ image.position }}</span>{% endunless %}
+{% capture foot %}<div class="flex flex--row flex--between flex--center-y gap--small pt--2">
+      <span class="label label--small grow" data-clamp="2">{{ image.credit | escape }}</span>
+      {% unless v_compact %}<span class="label label--small label--inverted rounded--full shrink-0">{{ image.position }}</span>{% endunless %}
     </div>{% endcapture %}
+{% capture pic %}{% comment %} inline style: no class exists for an image filter (sharpen, contrast, brightness) {% endcomment %}<img src="{{ image.image_url }}" class="image image--contain image-dither w--full h--full" style="filter:url(#potd-sharpen) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />{% endcapture %}
 {% if v_compact and h_compact %}
-<div class="layout gap--none" style="padding:0;justify-content:center;align-items:center">
-  <img src="{{ image.image_url }}" class="image image-dither" style="max-width:100%;max-height:100%;object-fit:contain;filter:url(#potd-sharpen) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />
+<div class="layout layout--center p--0">
+  {{ pic }}
 </div>
 {% elsif h_compact %}
-<div class="layout layout--col gap--none" style="padding:0;align-items:stretch">
-  <div style="flex:1 1 auto;min-height:0;display:flex;justify-content:center;align-items:center">
-    <img src="{{ image.image_url }}" class="image image-dither" style="max-width:100%;max-height:100%;object-fit:contain;filter:url(#potd-sharpen) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />
-  </div>
-  <div style="padding:8px 12px 0;border-top:2px solid #000">
-    <span class="title title--small" style="line-height:1.2">{{ image.title | escape }}</span>
+<div class="layout layout--col gap--none p--0">
+  <div class="stretch-y min-h--0 border--h-black">{{ pic }}</div>
+  <div class="flex flex--col flex--left gap--none px--3 py--2">
+    <span class="title title--small">{{ image.title | escape }}</span>
     <span class="label label--small" data-clamp="1">{{ image.credit | escape }}</span>
   </div>
 </div>
 {% elsif image.flow == 'top' and v_compact == false %}
 {% comment %} a landscape picture: whole, at full width on top; the text under it in two columns {% endcomment %}
-<div class="layout layout--col gap--none" style="padding:0;align-items:stretch">
-  <div style="flex:0 1 auto;min-height:0;max-height:66%;display:flex;justify-content:center;border-bottom:3px solid #000">
-    <img src="{{ image.image_url }}" class="image image-dither" style="max-width:100%;max-height:100%;object-fit:contain;filter:url(#potd-sharpen) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />
-  </div>
-  <div style="flex:1 1 auto;min-height:0;display:flex;gap:20px;padding:10px 20px 10px">
-    <div style="flex:0 0 38%;display:flex;flex-direction:column;min-width:0">
+<div class="layout layout--col gap--none p--0">
+  <div class="stretch-y h--[62cqh] shrink-0 border--h-black">{{ pic }}</div>
+  <div class="flex flex--row gap--large p--3 stretch-y">
+    <div class="flex flex--col flex--top gap--small {% if show_desc %}w--[38cqw] shrink-0{% else %}grow{% endif %}">
       {{ hdr }}
-      <span class="title title--small" style="margin-top:8px;line-height:1.2">{{ image.title | escape }}</span>
-      <div style="flex:1 1 auto"></div>
+      <span class="title title--small">{{ image.title | escape }}</span>
+      <div class="grow"></div>
       {{ foot }}
     </div>
-    <div style="flex:1 1 auto;display:flex;flex-direction:column;min-width:0">
-      {{ desc }}
-    </div>
+    {% if show_desc %}<div class="grow min-w--0" data-content-limiter="true"><span class="description">{{ image.description | escape }}</span></div>{% endif %}
   </div>
 </div>
 {% else %}
 {% comment %} a portrait or square picture (or a half view): whole, beside the text column {% endcomment %}
-<div class="layout gap--none" style="padding:0;align-items:stretch">
-  <div style="flex:0 1 auto;max-width:{% if v_compact %}58%{% else %}64%{% endif %};display:flex;align-items:center;justify-content:center">
-    <img src="{{ image.image_url }}" class="image image-dither" style="max-width:100%;max-height:100%;object-fit:contain;filter:url(#potd-sharpen) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />
-  </div>
-  <div style="flex:1 1 0;display:flex;flex-direction:column;padding:{% if v_compact %}10px 14px{% else %}16px 20px 14px{% endif %};min-width:{% if v_compact %}36%{% else %}34%{% endif %};border-left:3px solid #000">
+<div class="layout gap--none p--0">
+  <div class="grow">{{ pic }}</div>
+  <div class="flex flex--col flex--top gap--small p--3 shrink-0 border--v-black w--[{% if v_compact %}40{% else %}36{% endif %}cqw]">
     {{ hdr }}
-    <span class="title title--small" style="margin-top:12px;line-height:1.2">{{ image.title | escape }}</span>
-    {{ desc }}
+    <span class="title title--small">{{ image.title | escape }}</span>
     {{ foot }}
+    {% if show_desc %}{% comment %} last in the column: the limiter measures the space left under the blocks before it {% endcomment %}
+    <div class="grow" data-content-limiter="true"><span class="description">{{ image.description | escape }}</span></div>{% endif %}
   </div>
 </div>
 {% endif %}
-<script>
-// Fit the description to the height left under the title on this screen: whole lines only, then an ellipsis.
-// Measured again once the fonts are in, since the title's height changes with them.
-(function () {
-  function fit() {
-    document.querySelectorAll('.potd-desc').forEach(function (box) {
-      var t = box.firstElementChild;
-      t.style.webkitLineClamp = 'unset';
-      t.style.maxHeight = 'none';
-      var lh = parseFloat(getComputedStyle(t).lineHeight) || 16;
-      var n = Math.max(1, Math.floor((box.getBoundingClientRect().height + 1) / lh));
-      t.style.webkitLineClamp = String(n);
-      t.style.maxHeight = (n * lh) + 'px';
-    });
-  }
-  fit();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
-  window.addEventListener('load', fit);
-})();
-</script>
 {% endunless %}
 {% endtemplate %}
