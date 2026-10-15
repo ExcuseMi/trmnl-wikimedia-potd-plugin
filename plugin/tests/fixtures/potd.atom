@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<id>https://commons.wikimedia.org/w/api.php?action=featuredfeed&amp;feed=potd&amp;feedformat=atom&amp;language=en</id>
+	<title>Wikimedia Commons picture of the day feed</title>
+	<link rel="self" type="application/atom+xml" href="https://commons.wikimedia.org/w/api.php?action=featuredfeed&amp;feed=potd&amp;feedformat=atom&amp;language=en"/>
+	<link rel="alternate" type="text/html" href="https://commons.wikimedia.org/wiki/Main_Page"/>
+	<updated>2026-10-15T10:42:33Z</updated>
+	<subtitle>Some of the finest images on Wikimedia Commons</subtitle>
+	<generator>MediaWiki 1.47.0-wmf.24</generator>
+	<entry>
+		<id>https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261006000000/en</id>
+		<title>Wikimedia Commons picture of the day for October 6</title>
+		<link rel="alternate" type="text/html" href="https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261006000000/en"/>
+		<updated>2026-10-06T00:00:00Z</updated>
+
+		<summary type="html">&lt;div class=&quot;mw-content-ltr mw-parser-output&quot; lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;&lt;table class=&quot;toccolours floatright&quot; style=&quot;width:300px;text-align:center&quot;&gt;
+&lt;tbody&gt;&lt;tr&gt;
+&lt;th lang=&quot;en&quot;&gt;&lt;a href=&quot;/wiki/Commons:Picture_of_the_day&quot; title=&quot;Commons:Picture of the day&quot;&gt;Picture of the day&lt;/a&gt;
+&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;toccolours&quot; style=&quot;padding:0&quot;&gt;&lt;span typeof=&quot;mw:File&quot;&gt;&lt;a href=&quot;/wiki/File:Bessen_van_een_Mahonia_aquifolium._17-08-2025._(actm.)_01.jpg&quot; class=&quot;mw-file-description&quot;&gt;&lt;img src=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Bessen_van_een_Mahonia_aquifolium._17-08-2025._%28actm.%29_01.jpg/330px-Bessen_van_een_Mahonia_aquifolium._17-08-2025._%28actm.%29_01.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot; width=&quot;300&quot; height=&quot;300&quot; class=&quot;mw-file-element&quot; srcset=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Bessen_van_een_Mahonia_aquifolium._17-08-2025._%28actm.%29_01.jpg/960px-Bessen_van_een_Mahonia_aquifolium._17-08-2025._%28actm.%29_01.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail 2x&quot; data-file-width=&quot;3456&quot; data-file-height=&quot;3456&quot; /&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;div lang=&quot;en&quot; dir=&quot;ltr&quot; class=&quot;description en&quot; style=&quot;display:inline;&quot;&gt;Berries from a &lt;i&gt;Mahonia aquifolium&lt;/i&gt; shrub. Focus stack of 19 photos.&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;</summary>
+		<author><name></name></author>
+	</entry>
+	<entry>
+		<id>https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261007000000/en</id>
+		<title>Wikimedia Commons picture of the day for October 7</title>
+		<link rel="alternate" type="text/html" href="https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261007000000/en"/>
+		<updated>2026-10-07T00:00:00Z</updated>
+
+		<summary type="html">&lt;div class=&quot;mw-content-ltr mw-parser-output&quot; lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;&lt;table class=&quot;toccolours floatright&quot; style=&quot;width:300px;text-align:center&quot;&gt;
+&lt;tbody&gt;&lt;tr&gt;
+&lt;th lang=&quot;en&quot;&gt;&lt;a href=&quot;/wiki/Commons:Picture_of_the_day&quot; title=&quot;Commons:Picture of the day&quot;&gt;Picture of the day&lt;/a&gt;
+&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;toccolours&quot; style=&quot;padding:0&quot;&gt;&lt;span typeof=&quot;mw:File&quot;&gt;&lt;a href=&quot;/wiki/File:Rain_Quail_in_Bhigwan_August_2025_by_Tisha_Mukherjee_13.jpg&quot; class=&quot;mw-file-description&quot;&gt;&lt;img src=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Rain_Quail_in_Bhigwan_August_2025_by_Tisha_Mukherjee_13.jpg/330px-Rain_Quail_in_Bhigwan_August_2025_by_Tisha_Mukherjee_13.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot; width=&quot;300&quot; height=&quot;200&quot; class=&quot;mw-file-element&quot; srcset=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Rain_Quail_in_Bhigwan_August_2025_by_Tisha_Mukherjee_13.jpg/960px-Rain_Quail_in_Bhigwan_August_2025_by_Tisha_Mukherjee_13.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail 2x&quot; data-file-width=&quot;4399&quot; data-file-height=&quot;2932&quot; /&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;div lang=&quot;en&quot; dir=&quot;ltr&quot; class=&quot;description en&quot; style=&quot;display:inline;&quot;&gt;&lt;i&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Coturnix_coromandelica&quot; class=&quot;extiw&quot; title=&quot;w:Coturnix coromandelica&quot;&gt;Coturnix coromandelica&lt;/a&gt;&lt;/i&gt; (Rain Quail) in &lt;a href=&quot;https://en.wikipedia.org/wiki/Bhigwan&quot; class=&quot;extiw&quot; title=&quot;w:Bhigwan&quot;&gt;Bhigwan&lt;/a&gt;, Maharashtra, India.&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;</summary>
+		<author><name></name></author>
+	</entry>
+	<entry>
+		<id>https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261008000000/en</id>
+		<title>Wikimedia Commons picture of the day for October 8</title>
+		<link rel="alternate" type="text/html" href="https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261008000000/en"/>
+		<updated>2026-10-08T00:00:00Z</updated>
+
+		<summary type="html">&lt;div class=&quot;mw-content-ltr mw-parser-output&quot; lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;&lt;table class=&quot;toccolours floatright&quot; style=&quot;width:300px;text-align:center&quot;&gt;
+&lt;tbody&gt;&lt;tr&gt;
+&lt;th lang=&quot;en&quot;&gt;&lt;a href=&quot;/wiki/Commons:Picture_of_the_day&quot; title=&quot;Commons:Picture of the day&quot;&gt;Picture of the day&lt;/a&gt;
+&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;toccolours&quot; style=&quot;padding:0&quot;&gt;&lt;span typeof=&quot;mw:File&quot;&gt;&lt;a href=&quot;/wiki/File:011_Jaguar_drinking_in_Encontro_das_%C3%81guas_State_Park_Photo_by_Giles_Laurent.jpg&quot; class=&quot;mw-file-description&quot;&gt;&lt;img src=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/011_Jaguar_drinking_in_Encontro_das_%C3%81guas_State_Park_Photo_by_Giles_Laurent.jpg/330px-011_Jaguar_drinking_in_Encontro_das_%C3%81guas_State_Park_Photo_by_Giles_Laurent.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot; width=&quot;300&quot; height=&quot;200&quot; class=&quot;mw-file-element&quot; srcset=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/011_Jaguar_drinking_in_Encontro_das_%C3%81guas_State_Park_Photo_by_Giles_Laurent.jpg/960px-011_Jaguar_drinking_in_Encontro_das_%C3%81guas_State_Park_Photo_by_Giles_Laurent.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail 2x&quot; data-file-width=&quot;8419&quot; data-file-height=&quot;5613&quot; /&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;div lang=&quot;en&quot; dir=&quot;ltr&quot; class=&quot;description en&quot; style=&quot;display:inline;&quot;&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Jaguar&quot; class=&quot;extiw&quot; title=&quot;en:Jaguar&quot;&gt;Jaguar&lt;/a&gt; (&lt;i&gt;Panthera onca&lt;/i&gt;) drinking from the river in &lt;a href=&quot;https://en.wikipedia.org/wiki/Mato_Grosso&quot; class=&quot;extiw&quot; title=&quot;en:Mato Grosso&quot;&gt;Mato Grosso&lt;/a&gt;, &lt;a href=&quot;https://en.wikipedia.org/wiki/Brazil&quot; class=&quot;extiw&quot; title=&quot;en:Brazil&quot;&gt;Brazil&lt;/a&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;</summary>
+		<author><name></name></author>
+	</entry>
+	<entry>
+		<id>https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261009000000/en</id>
+		<title>Wikimedia Commons picture of the day for October 9</title>
+		<link rel="alternate" type="text/html" href="https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261009000000/en"/>
+		<updated>2026-10-09T00:00:00Z</updated>
+
+		<summary type="html">&lt;div class=&quot;mw-content-ltr mw-parser-output&quot; lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;&lt;table class=&quot;toccolours floatright&quot; style=&quot;width:300px;text-align:center&quot;&gt;
+&lt;tbody&gt;&lt;tr&gt;
+&lt;th lang=&quot;en&quot;&gt;&lt;a href=&quot;/wiki/Commons:Picture_of_the_day&quot; title=&quot;Commons:Picture of the day&quot;&gt;Picture of the day&lt;/a&gt;
+&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;toccolours&quot; style=&quot;padding:0&quot;&gt;&lt;span typeof=&quot;mw:File&quot;&gt;&lt;a href=&quot;/wiki/File:PO_boxes_at_the_historic_Chico_Post_Office_(2024)-L1005460.jpg&quot; class=&quot;mw-file-description&quot;&gt;&lt;img src=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/PO_boxes_at_the_historic_Chico_Post_Office_%282024%29-L1005460.jpg/330px-PO_boxes_at_the_historic_Chico_Post_Office_%282024%29-L1005460.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot; width=&quot;300&quot; height=&quot;214&quot; class=&quot;mw-file-element&quot; srcset=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/PO_boxes_at_the_historic_Chico_Post_Office_%282024%29-L1005460.jpg/960px-PO_boxes_at_the_historic_Chico_Post_Office_%282024%29-L1005460.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail 2x&quot; data-file-width=&quot;8312&quot; data-file-height=&quot;5937&quot; /&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;div lang=&quot;en&quot; dir=&quot;ltr&quot; class=&quot;description en&quot; style=&quot;display:inline;&quot;&gt;PO boxes at the historic &lt;a href=&quot;https://en.wikipedia.org/wiki/Chico_Midtown_Station&quot; class=&quot;extiw&quot; title=&quot;en:Chico Midtown Station&quot;&gt;U.S. Post Office&lt;/a&gt; in downtown Chico, California. Today is International &lt;a href=&quot;https://en.wikipedia.org/wiki/World_Post_Day&quot; class=&quot;extiw&quot; title=&quot;en:World Post Day&quot;&gt;World Post Day&lt;/a&gt;.&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;</summary>
+		<author><name></name></author>
+	</entry>
+	<entry>
+		<id>https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261010000000/en</id>
+		<title>Wikimedia Commons picture of the day for October 10</title>
+		<link rel="alternate" type="text/html" href="https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261010000000/en"/>
+		<updated>2026-10-10T00:00:00Z</updated>
+
+		<summary type="html">&lt;div class=&quot;mw-content-ltr mw-parser-output&quot; lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;&lt;table class=&quot;toccolours floatright&quot; style=&quot;width:300px;text-align:center&quot;&gt;
+&lt;tbody&gt;&lt;tr&gt;
+&lt;th lang=&quot;en&quot;&gt;&lt;a href=&quot;/wiki/Commons:Picture_of_the_day&quot; title=&quot;Commons:Picture of the day&quot;&gt;Picture of the day&lt;/a&gt;
+&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;toccolours&quot; style=&quot;padding:0&quot;&gt;&lt;span typeof=&quot;mw:File&quot;&gt;&lt;a href=&quot;/wiki/File:Bust_of_Germanicus,_front_-_Getty_Museum_(2021.66).jpg&quot; class=&quot;mw-file-description&quot;&gt;&lt;img src=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Bust_of_Germanicus%2C_front_-_Getty_Museum_%282021.66%29.jpg/330px-Bust_of_Germanicus%2C_front_-_Getty_Museum_%282021.66%29.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot; width=&quot;300&quot; height=&quot;374&quot; class=&quot;mw-file-element&quot; srcset=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Bust_of_Germanicus%2C_front_-_Getty_Museum_%282021.66%29.jpg/960px-Bust_of_Germanicus%2C_front_-_Getty_Museum_%282021.66%29.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail 2x&quot; data-file-width=&quot;9749&quot; data-file-height=&quot;12141&quot; /&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;div lang=&quot;en&quot; dir=&quot;ltr&quot; class=&quot;description en&quot; style=&quot;display:inline;&quot;&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Bust_(sculpture)&quot; class=&quot;extiw&quot; title=&quot;en:Bust (sculpture)&quot;&gt;Bust&lt;/a&gt; of &lt;a href=&quot;https://en.wikipedia.org/wiki/Germanicus&quot; class=&quot;extiw&quot; title=&quot;w:Germanicus&quot;&gt;Germanicus&lt;/a&gt;, &lt;a href=&quot;https://en.wikipedia.org/wiki/Getty_Villa&quot; class=&quot;extiw&quot; title=&quot;w:Getty Villa&quot;&gt;Getty Villa&lt;/a&gt;, &lt;a href=&quot;https://en.wikipedia.org/wiki/California&quot; class=&quot;extiw&quot; title=&quot;w:California&quot;&gt;California&lt;/a&gt;. The young Germanicus is depicted before the &lt;a href=&quot;https://en.wikipedia.org/wiki/Ancient_Rome&quot; class=&quot;extiw&quot; title=&quot;en:Ancient Rome&quot;&gt;Roman&lt;/a&gt; &lt;a href=&quot;https://en.wikipedia.org/wiki/Rite_of_passage&quot; class=&quot;extiw&quot; title=&quot;w:Rite of passage&quot;&gt;rite&lt;/a&gt; of &lt;i&gt;depositio barbae&lt;/i&gt;, the first shaving of the beard. Adopted by &lt;a href=&quot;https://en.wikipedia.org/wiki/Tiberius&quot; class=&quot;extiw&quot; title=&quot;en:Tiberius&quot;&gt;emperor Tiberius&lt;/a&gt;, Germanicus should succed him as Emperor, if he hadn&#039;t died on this day 2007 years ago.&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;</summary>
+		<author><name></name></author>
+	</entry>
+	<entry>
+		<id>https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261011000000/en</id>
+		<title>Wikimedia Commons picture of the day for October 11</title>
+		<link rel="alternate" type="text/html" href="https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261011000000/en"/>
+		<updated>2026-10-11T00:00:00Z</updated>
+
+		<summary type="html">&lt;div class=&quot;mw-content-ltr mw-parser-output&quot; lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;&lt;table class=&quot;toccolours floatright&quot; style=&quot;width:300px;text-align:center&quot;&gt;
+&lt;tbody&gt;&lt;tr&gt;
+&lt;th lang=&quot;en&quot;&gt;&lt;a href=&quot;/wiki/Commons:Picture_of_the_day&quot; title=&quot;Commons:Picture of the day&quot;&gt;Picture of the day&lt;/a&gt;
+&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;toccolours&quot; style=&quot;padding:0&quot;&gt;&lt;span typeof=&quot;mw:File&quot;&gt;&lt;a href=&quot;/wiki/File:Zona_arqueol%C3%B3gica_de_Cantona,_Puebla,_M%C3%A9xico,_2013-10-11,_DD_43.JPG&quot; class=&quot;mw-file-description&quot;&gt;&lt;img src=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a2/Zona_arqueol%C3%B3gica_de_Cantona%2C_Puebla%2C_M%C3%A9xico%2C_2013-10-11%2C_DD_43.JPG/330px-Zona_arqueol%C3%B3gica_de_Cantona%2C_Puebla%2C_M%C3%A9xico%2C_2013-10-11%2C_DD_43.JPG?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot; width=&quot;300&quot; height=&quot;154&quot; class=&quot;mw-file-element&quot; srcset=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a2/Zona_arqueol%C3%B3gica_de_Cantona%2C_Puebla%2C_M%C3%A9xico%2C_2013-10-11%2C_DD_43.JPG/960px-Zona_arqueol%C3%B3gica_de_Cantona%2C_Puebla%2C_M%C3%A9xico%2C_2013-10-11%2C_DD_43.JPG?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail 2x&quot; data-file-width=&quot;5578&quot; data-file-height=&quot;2865&quot; /&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;div lang=&quot;en&quot; dir=&quot;ltr&quot; class=&quot;description en&quot; style=&quot;display:inline;&quot;&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Cantona_(archaeological_site)&quot; class=&quot;extiw&quot; title=&quot;en:Cantona (archaeological site)&quot;&gt;Archaeological area of Cantona&lt;/a&gt;, &lt;a href=&quot;https://en.wikipedia.org/wiki/Puebla,_Mexico&quot; class=&quot;extiw&quot; title=&quot;w:Puebla, Mexico&quot;&gt;Puebla, Mexico&lt;/a&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;</summary>
+		<author><name></name></author>
+	</entry>
+	<entry>
+		<id>https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261012000000/en</id>
+		<title>Wikimedia Commons picture of the day for October 12</title>
+		<link rel="alternate" type="text/html" href="https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261012000000/en"/>
+		<updated>2026-10-12T00:00:00Z</updated>
+
+		<summary type="html">&lt;div class=&quot;mw-content-ltr mw-parser-output&quot; lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;&lt;table class=&quot;toccolours floatright&quot; style=&quot;width:300px;text-align:center&quot;&gt;
+&lt;tbody&gt;&lt;tr&gt;
+&lt;th lang=&quot;en&quot;&gt;&lt;a href=&quot;/wiki/Commons:Picture_of_the_day&quot; title=&quot;Commons:Picture of the day&quot;&gt;Picture of the day&lt;/a&gt;
+&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;toccolours&quot; style=&quot;padding:0&quot;&gt;&lt;span typeof=&quot;mw:File&quot;&gt;&lt;a href=&quot;/wiki/File:Gotland_Grand_National_October_2023_12.jpg&quot; class=&quot;mw-file-description&quot;&gt;&lt;img src=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d1/Gotland_Grand_National_October_2023_12.jpg/330px-Gotland_Grand_National_October_2023_12.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot; width=&quot;300&quot; height=&quot;405&quot; class=&quot;mw-file-element&quot; srcset=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d1/Gotland_Grand_National_October_2023_12.jpg/960px-Gotland_Grand_National_October_2023_12.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail 2x&quot; data-file-width=&quot;3712&quot; data-file-height=&quot;5014&quot; /&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;div lang=&quot;en&quot; dir=&quot;ltr&quot; class=&quot;description en&quot; style=&quot;display:inline;&quot;&gt;Gotland Grand National 2023. Gotland Grand National has long been considered the world’s largest &lt;a href=&quot;https://en.wikipedia.org/wiki/Enduro&quot; class=&quot;extiw&quot; title=&quot;w:Enduro&quot;&gt;Enduro&lt;/a&gt; competition and was first run in 1984.&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;</summary>
+		<author><name></name></author>
+	</entry>
+	<entry>
+		<id>https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261013000000/en</id>
+		<title>Wikimedia Commons picture of the day for October 13</title>
+		<link rel="alternate" type="text/html" href="https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261013000000/en"/>
+		<updated>2026-10-13T00:00:00Z</updated>
+
+		<summary type="html">&lt;div class=&quot;mw-content-ltr mw-parser-output&quot; lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;&lt;table class=&quot;toccolours floatright&quot; style=&quot;width:300px;text-align:center&quot;&gt;
+&lt;tbody&gt;&lt;tr&gt;
+&lt;th lang=&quot;en&quot;&gt;&lt;a href=&quot;/wiki/Commons:Picture_of_the_day&quot; title=&quot;Commons:Picture of the day&quot;&gt;Picture of the day&lt;/a&gt;
+&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;toccolours&quot; style=&quot;padding:0&quot;&gt;&lt;span typeof=&quot;mw:File&quot;&gt;&lt;a href=&quot;/wiki/File:Desert_elephant_(Loxodonta_africana)_spraying_sand.jpg&quot; class=&quot;mw-file-description&quot;&gt;&lt;img src=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Desert_elephant_%28Loxodonta_africana%29_spraying_sand.jpg/330px-Desert_elephant_%28Loxodonta_africana%29_spraying_sand.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot; width=&quot;300&quot; height=&quot;200&quot; class=&quot;mw-file-element&quot; srcset=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Desert_elephant_%28Loxodonta_africana%29_spraying_sand.jpg/960px-Desert_elephant_%28Loxodonta_africana%29_spraying_sand.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail 2x&quot; data-file-width=&quot;5139&quot; data-file-height=&quot;3426&quot; /&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;div lang=&quot;en&quot; dir=&quot;ltr&quot; class=&quot;description en&quot; style=&quot;display:inline;&quot;&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Desert_elephant&quot; class=&quot;extiw&quot; title=&quot;en:Desert elephant&quot;&gt;Desert elephant&lt;/a&gt; (&lt;i&gt;Loxodonta africana&lt;/i&gt;) spraying sand on herself while guarding her sleeping baby. She has covered the baby with a branch. In &lt;a href=&quot;https://en.wikipedia.org/wiki/Damaraland&quot; class=&quot;extiw&quot; title=&quot;en:Damaraland&quot;&gt;Damaraland&lt;/a&gt;, &lt;a href=&quot;https://en.wikipedia.org/wiki/Namibia&quot; class=&quot;extiw&quot; title=&quot;en:Namibia&quot;&gt;Namibia&lt;/a&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;</summary>
+		<author><name></name></author>
+	</entry>
+	<entry>
+		<id>https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261014000000/en</id>
+		<title>Wikimedia Commons picture of the day for October 14</title>
+		<link rel="alternate" type="text/html" href="https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261014000000/en"/>
+		<updated>2026-10-14T00:00:00Z</updated>
+
+		<summary type="html">&lt;div class=&quot;mw-content-ltr mw-parser-output&quot; lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;&lt;table class=&quot;toccolours floatright&quot; style=&quot;width:300px;text-align:center&quot;&gt;
+&lt;tbody&gt;&lt;tr&gt;
+&lt;th lang=&quot;en&quot;&gt;&lt;a href=&quot;/wiki/Commons:Picture_of_the_day&quot; title=&quot;Commons:Picture of the day&quot;&gt;Picture of the day&lt;/a&gt;
+&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;toccolours&quot; style=&quot;padding:0&quot;&gt;&lt;span typeof=&quot;mw:File&quot;&gt;&lt;a href=&quot;/wiki/File:Great_Blue_Heron_(Ardea_herodias),_hunting.jpg&quot; class=&quot;mw-file-description&quot;&gt;&lt;img src=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Great_Blue_Heron_%28Ardea_herodias%29%2C_hunting.jpg/330px-Great_Blue_Heron_%28Ardea_herodias%29%2C_hunting.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot; width=&quot;300&quot; height=&quot;191&quot; class=&quot;mw-file-element&quot; srcset=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Great_Blue_Heron_%28Ardea_herodias%29%2C_hunting.jpg/960px-Great_Blue_Heron_%28Ardea_herodias%29%2C_hunting.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail 2x&quot; data-file-width=&quot;4790&quot; data-file-height=&quot;3043&quot; /&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;div lang=&quot;en&quot; dir=&quot;ltr&quot; class=&quot;description en&quot; style=&quot;display:inline;&quot;&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Great_Blue_Heron&quot; class=&quot;extiw&quot; title=&quot;w:Great Blue Heron&quot;&gt;Great Blue Heron&lt;/a&gt; (&lt;i&gt;Ardea herodias&lt;/i&gt;), hunting at &lt;a href=&quot;https://en.wikipedia.org/wiki/Richardson_Bay&quot; class=&quot;extiw&quot; title=&quot;w:Richardson Bay&quot;&gt;Richardson Bay&lt;/a&gt; near &lt;a href=&quot;https://en.wikipedia.org/wiki/Strawberry,_Marin_County,_California&quot; class=&quot;extiw&quot; title=&quot;en:Strawberry, Marin County, California&quot;&gt;Strawberry, California&lt;/a&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;</summary>
+		<author><name></name></author>
+	</entry>
+	<entry>
+		<id>https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261015000000/en</id>
+		<title>Wikimedia Commons picture of the day for October 15</title>
+		<link rel="alternate" type="text/html" href="https://commons.wikimedia.org/wiki/Special:FeedItem/potd/20261015000000/en"/>
+		<updated>2026-10-15T00:00:00Z</updated>
+
+		<summary type="html">&lt;div class=&quot;mw-content-ltr mw-parser-output&quot; lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;&lt;table class=&quot;toccolours floatright&quot; style=&quot;width:300px;text-align:center&quot;&gt;
+&lt;tbody&gt;&lt;tr&gt;
+&lt;th lang=&quot;en&quot;&gt;&lt;a href=&quot;/wiki/Commons:Picture_of_the_day&quot; title=&quot;Commons:Picture of the day&quot;&gt;Picture of the day&lt;/a&gt;
+&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;toccolours&quot; style=&quot;padding:0&quot;&gt;&lt;span typeof=&quot;mw:File&quot;&gt;&lt;a href=&quot;/wiki/File:Pepino_de_mar_(Holothuria_fuscogilva),_parque_nacional_Ras_Muhammad,_Egipto,_2022-03-28,_DD_119.jpg&quot; class=&quot;mw-file-description&quot;&gt;&lt;img src=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Pepino_de_mar_%28Holothuria_fuscogilva%29%2C_parque_nacional_Ras_Muhammad%2C_Egipto%2C_2022-03-28%2C_DD_119.jpg/330px-Pepino_de_mar_%28Holothuria_fuscogilva%29%2C_parque_nacional_Ras_Muhammad%2C_Egipto%2C_2022-03-28%2C_DD_119.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot; width=&quot;300&quot; height=&quot;200&quot; class=&quot;mw-file-element&quot; srcset=&quot;https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Pepino_de_mar_%28Holothuria_fuscogilva%29%2C_parque_nacional_Ras_Muhammad%2C_Egipto%2C_2022-03-28%2C_DD_119.jpg/960px-Pepino_de_mar_%28Holothuria_fuscogilva%29%2C_parque_nacional_Ras_Muhammad%2C_Egipto%2C_2022-03-28%2C_DD_119.jpg?utm_source=commons.wikimedia.org&amp;amp;utm_campaign=parser&amp;amp;utm_content=thumbnail 2x&quot; data-file-width=&quot;5011&quot; data-file-height=&quot;3341&quot; /&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;div lang=&quot;en&quot; dir=&quot;ltr&quot; class=&quot;description en&quot; style=&quot;display:inline;&quot;&gt;White teatfish (&lt;i&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Holothuria_fuscogilva&quot; class=&quot;extiw&quot; title=&quot;en:Holothuria fuscogilva&quot;&gt;Holothuria fuscogilva&lt;/a&gt;&lt;/i&gt;), &lt;a href=&quot;https://en.wikipedia.org/wiki/Ras_Muhammad_National_Park&quot; class=&quot;extiw&quot; title=&quot;en:Ras Muhammad National Park&quot;&gt;Ras Muhammad National Park&lt;/a&gt;, Red Sea, Egypt. This species of &lt;a href=&quot;https://en.wikipedia.org/wiki/sea_cucumber&quot; class=&quot;extiw&quot; title=&quot;en:sea cucumber&quot;&gt;sea cucumber&lt;/a&gt;, also known as white teeth, is found in shallow waters near islands and around coral reefs in the tropical waters of the Indo-Pacific ocean. Juvenile cucumbers live in shallower waters (such as inter-tidal zones) and then migrate to deeper waters as they mature. Adult cucumbers weigh between 2.4 and 4 kilograms. They are oval in shape and have a firm texture. This species cucumber has lateral papillae (teats) which are often buried in the sand. As it&#039;s &lt;a href=&quot;https://en.wikipedia.org/wiki/Sea_cucumber_as_food&quot; class=&quot;extiw&quot; title=&quot;en:Sea cucumber as food&quot;&gt;consumed as a food&lt;/a&gt; and is part of a large commercial fishery across its range, it was listed as vulnerable on the &lt;a href=&quot;https://en.wikipedia.org/wiki/IUCN_Red_List&quot; class=&quot;extiw&quot; title=&quot;en:IUCN Red List&quot;&gt;IUCN Red List&lt;/a&gt; in 2010 due to overfishing.&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;</summary>
+		<author><name></name></author>
+	</entry>
+</feed>

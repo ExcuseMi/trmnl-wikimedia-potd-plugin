@@ -14,7 +14,7 @@
       <span class="label label--small text--bold">Picture of the day</span>
       {% if image.date_label != blank %}<span class="label label--small">{{ image.date_label }}</span>{% endif %}
     </div>{% endcapture %}
-{% capture foot %}<div class="flex flex--row flex--between flex--center-y gap--small pt--2">
+{% capture foot %}<div class="flex flex--row flex--between flex--center-y gap--small w--full pt--2">
       <span class="label label--small grow" data-clamp="2">{{ image.credit | escape }}</span>
       {% unless v_compact %}<span class="label label--small label--inverted rounded--full shrink-0">{{ image.position }}</span>{% endunless %}
     </div>{% endcapture %}
@@ -34,24 +34,26 @@
 {% elsif image.flow == 'top' and v_compact == false %}
 {% comment %} a landscape picture: whole, at full width on top; the text under it in two columns {% endcomment %}
 <div class="layout layout--col gap--none p--0">
-  <div class="stretch-y h--[62cqh] shrink-0 border--h-black">{{ pic }}</div>
+  <div class="stretch-y h--[60cqh] shrink-0">{{ pic }}</div>
+  <div class="border--h-black w--full shrink-0" data-rule="picture"></div>
   <div class="flex flex--row gap--large p--3 stretch-y">
-    <div class="flex flex--col flex--top gap--small {% if show_desc %}w--[38cqw] shrink-0{% else %}grow{% endif %}">
+    <div class="stretch flex flex--col flex--top flex--left gap--small {% if show_desc %}w--[38cqw] shrink-0{% else %}grow{% endif %}">
       {{ hdr }}
       <span class="title title--small">{{ image.title | escape }}</span>
       <div class="grow"></div>
       {{ foot }}
     </div>
-    {% if show_desc %}<div class="grow min-w--0" data-content-limiter="true"><span class="description">{{ image.description | escape }}</span></div>{% endif %}
+    {% if show_desc %}<div class="stretch grow min-w--0" data-content-limiter="true"><span class="description">{{ image.description | escape }}</span></div>{% endif %}
   </div>
 </div>
 {% else %}
 {% comment %} a portrait or square picture (or a half view): whole, beside the text column {% endcomment %}
 <div class="layout gap--none p--0">
-  <div class="grow">{{ pic }}</div>
-  <div class="flex flex--col flex--top gap--small p--3 shrink-0 border--v-black w--[{% if v_compact %}40{% else %}36{% endif %}cqw]">
+  <div class="grow min-w--0 min-h--0">{{ pic }}</div>
+  <div class="stretch flex flex--col flex--top flex--left gap--small p--3 shrink-0 border--v-black w--[{% if v_compact %}40{% else %}36{% endif %}cqw]">
     {{ hdr }}
     <span class="title title--small">{{ image.title | escape }}</span>
+    {% unless show_desc %}<div class="grow"></div>{% endunless %}
     {{ foot }}
     {% if show_desc %}{% comment %} last in the column: the limiter measures the space left under the blocks before it {% endcomment %}
     <div class="grow" data-content-limiter="true"><span class="description">{{ image.description | escape }}</span></div>{% endif %}
