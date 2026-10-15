@@ -135,7 +135,7 @@ RSpec.describe 'Wikimedia Commons Picture of the Day' do
                   const d = document.querySelector('.description');
                   if (!d) return null;
                   const probe = document.createElement('span');
-                  probe.className = 'description';
+                  probe.className = d.className; // the same classes, lg: variants included
                   document.querySelector('.view').appendChild(probe);
                   const native = getComputedStyle(probe).fontSize;
                   probe.remove();

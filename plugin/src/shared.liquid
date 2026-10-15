@@ -19,7 +19,7 @@
 {% capture foot %}<div class="flex flex--col gap--small w--full pt--2">
       {% if image.notice != blank %}<span class="label label--small lg:label--base" data-notice="1" data-clamp="3">{{ image.notice | escape }}</span>{% endif %}
       <div class="flex flex--row flex--between flex--center-y gap--small w--full">
-        <span class="label label--small grow" data-clamp="2">{{ image.credit | escape }}</span>
+        <span class="label label--small lg:label--base grow"{% if v_compact %} data-clamp="2"{% endif %}>{{ image.credit | escape }}</span>
         {% unless v_compact %}{% unless show_tb or image.date_label == blank %}<span class="label label--small lg:label--base label--inverted rounded--full shrink-0">{{ image.date_label }}</span>{% endunless %}{% endunless %}
       </div>
     </div>{% endcapture %}
@@ -40,7 +40,7 @@
 <div class="layout layout--col gap--none p--0">
   <div class="stretch-y min-h--0 border--h-black">{{ pic }}</div>
   <div class="flex flex--col flex--left gap--none px--3 py--2">
-    <span class="title title--small lg:title--base">{{ image.title | escape }}</span>
+    <span class="title title--small {% if v_compact %}lg:title--base{% else %}lg:title--large{% endif %}">{{ image.title | escape }}</span>
     <span class="label label--small lg:label--base" data-clamp="1">{{ image.credit | escape }}</span>
   </div>
 </div>
@@ -52,11 +52,11 @@
   {% comment %} the text block: its content, at most 35% of the height; the picture gets the rest (inline style: the framework has no max-height class) {% endcomment %}
   <div class="flex flex--row gap--large p--3 shrink-0 min-h--0" data-text="1" style="max-height:35cqh;overflow:hidden">
     <div class="flex flex--col flex--top flex--left gap--small self--stretch w--[35cqw] shrink-0">
-      <span class="title title--small lg:title--base">{{ image.title | escape }}</span>
+      <span class="title title--small {% if v_compact %}lg:title--base{% else %}lg:title--large{% endif %}">{{ image.title | escape }}</span>
       <div class="grow"></div>
       {{ foot }}
     </div>
-    <div class="stretch grow min-w--0 min-h--0 potd-desc"><span class="description lg:description--base" data-clamp="{% if image.flow == 'top' %}6{% else %}12{% endif %}">{{ image.description | escape }}</span></div>
+    <div class="stretch grow min-w--0 min-h--0 potd-desc"><span class="description {% if v_compact %}lg:description--base{% else %}lg:description--large lg:font--regular{% endif %}" data-clamp="{% if image.flow == 'top' %}6{% else %}12{% endif %}">{{ image.description | escape }}</span></div>
   </div>
 </div>
 {% else %}
@@ -65,10 +65,10 @@
   <div class="stretch min-w--0 min-h--0 pr--2 portrait:pr--0 portrait:pb--2">{{ pic }}</div>
   <div class="border--v-black shrink-0 portrait:hidden"></div>
   <div class="self--stretch flex flex--col flex--top flex--left gap--small p--3 shrink-0 portrait:w--full w--[{% if v_compact %}40{% else %}35{% endif %}cqw]">
-    <span class="title title--small lg:title--base">{{ image.title | escape }}</span>
+    <span class="title title--small {% if v_compact %}lg:title--base{% else %}lg:title--large{% endif %}">{{ image.title | escape }}</span>
     {{ foot }}
     {% comment %} last in the column: the script measures the space left under the blocks before it {% endcomment %}
-    <div class="grow min-h--0 potd-desc"><span class="description lg:description--base" data-clamp="{% if image.flow == 'top' %}6{% else %}12{% endif %}">{{ image.description | escape }}</span></div>
+    <div class="grow min-h--0 potd-desc"><span class="description {% if v_compact %}lg:description--base{% else %}lg:description--large lg:font--regular{% endif %}" data-clamp="{% if image.flow == 'top' %}6{% else %}12{% endif %}">{{ image.description | escape }}</span></div>
   </div>
 </div>
 {% endif %}
