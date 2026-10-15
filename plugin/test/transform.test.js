@@ -6,6 +6,10 @@ const path = require('node:path');
 
 const file = process.env.TRANSFORM || path.join(__dirname, '..', 'src', 'transform.js');
 const run = new Function(fs.readFileSync(file, 'utf8') + '\nreturn run;')();
+const meta = fs.readFileSync(path.join(__dirname, 'extmetadata.json'), 'utf8');
+const okFetch = (body) => async () => ({ ok: true, json: async () => JSON.parse(body) });
+// No test reaches the network: fetch fails unless a test stubs it
+globalThis.fetch = async () => { throw new Error('no network in tests'); };
 const atom = fs.readFileSync(path.join(__dirname, 'potd-sample.atom'), 'utf8');
 
 const withState = (answer, state, mode) => ({
@@ -59,7 +63,7 @@ test('credit always names Wikimedia Commons; author and licence only when known'
   assert.strictEqual(plainOut.image.author, null);
   const xml = '<feed><entry><id>x/potd/20261001000000/en</id><updated>2026-10-01T00:00:00Z</updated><summary>&lt;img src=&quot;https://thumb.wikimedia.org/a/330px-A.jpg&quot;&gt;&lt;span class=&quot;licensetpl&quot;&gt;CC BY-SA 4.0&lt;/span&gt;&lt;span class=&quot;fileinfo-author&quot;&gt;Jane Doe&lt;/span&gt;</summary></entry></feed>';
   const rich = await run({ data: xml });
-  assert.strictEqual(rich.image.credit, 'Wikimedia Commons / Jane Doe / CC BY-SA 4.0');
+  assert.strictEqual(rich.image.credit, 'Jane Doe, CC BY-SA 4.0, Wikimedia Commons');
 });
 
 test('the same pictures come out of a parsed JSON answer and a raw string', async () => {
@@ -138,3 +142,53 @@ for (const [name, input] of [
     if (input && typeof input === 'object') assert.deepStrictEqual(out.trmnl_state, state);
   });
 }
+
+test('credit and description come from the Commons metadata call; nothing of it in the state', async () => {
+  let url;
+  globalThis.fetch = async (u) => { url = u; return okFetch(meta)(); };
+  try {
+    const out = await run({ data: atom, trmnl: { plugin_settings: { custom_fields_values: { language: 'nl' } } } });
+    assert.strictEqual(out.image.credit, 'Diego Delso, CC BY-SA 4.0, Wikimedia Commons');
+    assert.match(out.image.description, /^White teatfish \(Holothuria fuscogilva\), Ras Muhammad National Park, Red Sea, Egypt\./);
+    assert.ok(out.image.description.length <= 200 && !/[<>]/.test(out.image.description));
+    assert.match(url, /titles=File%3APepino_de_mar_/);
+    assert.match(url, /iiextmetadatafilter=Artist%7CLicenseShortName%7CImageDescription/);
+    assert.match(url, /uselang=nl/);
+    assert.ok(!/Delso|teatfish/.test(JSON.stringify(out.trmnl_state)));
+  } finally { delete globalThis.fetch; globalThis.fetch = async () => { throw new Error('no network in tests'); }; }
+});
+
+const failures = {
+  'fetch throws': async () => { throw new Error('boom'); },
+  'fetch answers garbage': async () => ({ ok: true, json: async () => ({ query: 'x' }) }),
+  'fetch answers text': async () => ({ ok: true, json: async () => { throw new SyntaxError('bad'); } }),
+  'fetch answers an HTTP error': async () => ({ ok: false, json: async () => JSON.parse(meta) }),
+  'fetch answers without fields': async () => ({ ok: true, json: async () => ({ query: { pages: { 1: { imageinfo: [{ extmetadata: {} }] } } } }) }),
+  'a slow fetch that ignores the abort': () => new Promise(() => {}),
+};
+for (const [name, stub] of Object.entries(failures)) {
+  test(`${name}: credit and description fall back to the feed, no crash`, { timeout: 4500 }, async () => {
+    globalThis.fetch = stub;
+    const t0 = Date.now();
+    try {
+      const out = await run({ data: atom });
+      assert.strictEqual(out.image.credit, 'Wikimedia Commons');
+      assert.match(out.image.description, /^White teatfish/); // the summary's caption
+      assert.ok(Date.now() - t0 < 3500, 'stays inside the 5 s budget');
+    } finally { globalThis.fetch = async () => { throw new Error('no network in tests'); }; }
+  });
+}
+
+test('no description anywhere: null, not a crash', async () => {
+  const bare = '<feed><entry><id>x/potd/20261001000000/en</id><updated>2026-10-01T00:00:00Z</updated><summary>&lt;img src=&quot;https://thumb.wikimedia.org/a/330px-A.jpg&quot;&gt;</summary></entry></feed>';
+  const out = await run({ data: bare });
+  assert.strictEqual(out.image.description, null);
+  assert.strictEqual(out.image.credit, 'Wikimedia Commons');
+});
+
+test('summary author and licence stay when the call lacks them', async () => {
+  const xml = '<feed><entry><id>x/potd/20261001000000/en</id><updated>2026-10-01T00:00:00Z</updated><summary>&lt;img src=&quot;https://thumb.wikimedia.org/a/330px-A.jpg&quot;&gt;&lt;span class=&quot;fileinfo-author&quot;&gt;Jane Doe&lt;/span&gt;</summary></entry></feed>';
+  globalThis.fetch = failures['fetch answers without fields'];
+  try { assert.strictEqual((await run({ data: xml })).image.credit, 'Jane Doe, Wikimedia Commons'); }
+  finally { globalThis.fetch = async () => { throw new Error('no network in tests'); }; }
+});

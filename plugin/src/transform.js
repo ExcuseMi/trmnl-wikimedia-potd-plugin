@@ -160,15 +160,68 @@ function pictures(input) {
     var license = classText(html, 'licen');
     return {
       id: shortId(e.id) || d.date || url, sort: String(e.updated || ''),
+      caption: caption(html) || null,
       title: caption(html) || (file ? nameToTitle(file) : plain(e.title)),
       link: file ? COMMONS + '/wiki/' + file : (e.link || COMMONS),
       image_url: url, date: d.date, date_label: d.label,
       author: author || null, license: license || null,
-      credit: ['Wikimedia Commons'].concat(author ? [author] : [], license ? [license] : []).join(' / '),
+      credit: creditLine(author, license),
     };
   }).filter(Boolean);
   list.sort(function (a, b) { return a.sort < b.sort ? 1 : a.sort > b.sort ? -1 : 0; });
   return list;
+}
+
+function creditLine(author, license) {
+  return [author, license, 'Wikimedia Commons'].filter(Boolean).join(', ');
+}
+
+var FETCH_MS = 2000; // well inside the 5 s budget
+
+function cut(t, max) {
+  return t.length > max ? t.slice(0, max - 3).replace(/\s+\S*$/, '') + '...' : t;
+}
+
+/**
+ * Artist, licence and description of one file from the Commons API: { author, license, description },
+ * any of them null; null as a whole when the call fails, times out, or answers garbage.
+ * Never stored in the state.
+ */
+async function fileMeta(link, lang) {
+  var timer, ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  try {
+    var name = link.replace(/^.*\/wiki\/File:/, '');
+    try { name = decodeURIComponent(name); } catch (e) { /* keep as is */ }
+    var url = COMMONS + '/w/api.php?action=query&titles=' + encodeURIComponent('File:' + name) +
+      '&prop=imageinfo&iiprop=extmetadata&iiextmetadatafilter=Artist%7CLicenseShortName%7CImageDescription' +
+      '&uselang=' + lang + '&format=json&origin=*';
+    var timeout = new Promise(function (_, reject) {
+      timer = setTimeout(function () { if (ctl) ctl.abort(); reject(new Error('timeout')); }, FETCH_MS);
+    });
+    var work = (async function () {
+      var res = await fetch(url, ctl ? { signal: ctl.signal } : undefined);
+      if (!res || res.ok === false) return null;
+      return await res.json();
+    })();
+    work.catch(function () { /* the race below reports it */ });
+    var json = await Promise.race([work, timeout]);
+    var pages = json && json.query && json.query.pages;
+    var page = pages && pages[Object.keys(pages)[0]];
+    var ext = page && page.imageinfo && page.imageinfo[0] && page.imageinfo[0].extmetadata;
+    if (!ext || typeof ext !== 'object') return null;
+    var val = function (k) { return ext[k] && typeof ext[k].value === 'string' ? plain(ext[k].value) : ''; };
+    return { author: cut(val('Artist'), 40) || null, license: val('LicenseShortName') || null, description: cut(val('ImageDescription'), 200) || null };
+  } catch (e) {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function langOf(input) {
+  var cfv = (input && input.trmnl && input.trmnl.plugin_settings && input.trmnl.plugin_settings.custom_fields_values) || {};
+  var l = String(cfv.language || (input && input.language) || 'en').toLowerCase();
+  return /^[a-z]{2,3}(-[a-z]{2,4})?$/.test(l) ? l : 'en';
 }
 
 /** Saved state, or null when missing or garbage. */
@@ -215,5 +268,12 @@ async function run(input) {
   var idx = pick(list, modeOf(input), state);
   var img = Object.assign({}, list[idx], { position: (idx + 1) + ' / ' + list.length, n: idx + 1, total: list.length });
   delete img.sort;
+  var meta = await fileMeta(img.link, langOf(input));
+  if (meta) {
+    img.author = meta.author || img.author;
+    img.license = meta.license || img.license;
+    img.credit = creditLine(img.author, img.license);
+  }
+  img.description = (meta && meta.description) || img.caption || null;
   return { image: img, trmnl_state: { i: idx, last: list[idx].id } };
 }

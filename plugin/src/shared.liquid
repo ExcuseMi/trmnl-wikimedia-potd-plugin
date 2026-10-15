@@ -3,8 +3,17 @@
   {% unless image.image_url %}
   <span class="description">{{ notice | default: "No picture available right now. The next refresh tries again." }}</span>
   {% else %}
-  <img src="{{ image.image_url }}" class="image image--contain image-dither w--[100cqw] h--[90cqh]" alt="{{ image.title | escape }}" />
-  <div class="w--full" style="text-align:center"><span class="label label--small" data-clamp="1">{% if h_compact and v_compact %}Wikimedia Commons{% else %}{{ image.credit | escape }}{% endif %}</span></div>
+  <div class="relative w--[100cqw] h--[100cqh]">
+    <img src="{{ image.image_url }}" class="image image--contain image-dither w--[100cqw] h--[100cqh]" alt="{{ image.title | escape }}" />
+    <div class="absolute top--1 right--1 z--2 bg--white border p--1">
+      <span class="label label--small" data-clamp="1">{% if h_compact and v_compact %}Wikimedia Commons{% else %}{{ image.credit | escape }}{% endif %}</span>
+    </div>
+    {% unless h_compact %}{% if image.description != blank %}
+    <div class="absolute bottom--1 left--1 right--1 z--2 bg--white border p--1">
+      <span class="description" data-clamp="2">{{ image.description | escape }}</span>
+    </div>
+    {% endif %}{% endunless %}
+  </div>
   {% endunless %}
 </div>
 <div class="title_bar">
