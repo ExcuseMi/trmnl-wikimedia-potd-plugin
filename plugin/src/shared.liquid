@@ -4,30 +4,32 @@
   <span class="description">{{ notice | default: "No picture available right now. The next refresh tries again." }}</span>
 </div>
 {% else %}
-{% comment %} inline style: the hidden SVG filter definition has no class; the picture filter below refers to it {% endcomment %}
-<svg width="0" height="0" style="position:absolute"><filter id="potd-sharpen"><feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="0 -0.6 0 -0.6 3.4 -0.6 0 -0.6 0"/></filter></svg>
+{% comment %} the hidden SVG filter definition: framework classes for position and size; the picture filter below refers to it {% endcomment %}
+<svg width="0" height="0" class="absolute w--[0px] h--[0px]"><filter id="potd-sharpen"><feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="0 -0.6 0 -0.6 3.4 -0.6 0 -0.6 0"/></filter></svg>
 {% comment %} show_description arrives as true, "true", false or "false" (or yes/no); missing means on {% endcomment %}
 {% assign sd = trmnl.plugin_settings.custom_fields_values.show_description | append: "" | downcase %}
 {% assign show_desc = true %}
+{% assign fit = trmnl.plugin_settings.custom_fields_values.picture_fit | append: "" | downcase %}
+{% if fit != "cover" %}{% assign fit = "contain" %}{% endif %}
 {% if sd == "false" or sd == "no" or sd == "0" or sd == "off" %}{% assign show_desc = false %}{% endif %}
 {% capture hdr %}<div class="flex flex--row flex--between flex--center-y gap--small w--full border--h-black pb--2">
-      <span class="label label--small text--bold">Picture of the day</span>
-      {% if image.date_label != blank %}<span class="label label--small">{{ image.date_label }}</span>{% endif %}
+      <span class="label label--small lg:label--base text--bold">Picture of the day</span>
+      {% if image.date_label != blank %}<span class="label label--small lg:label--base">{{ image.date_label }}</span>{% endif %}
     </div>{% endcapture %}
 {% capture foot %}<div class="flex flex--col gap--small w--full pt--2">
-      {% if image.notice != blank %}<span class="label label--small" data-notice="1" data-clamp="3">{{ image.notice | escape }}</span>{% endif %}
+      {% if image.notice != blank %}<span class="label label--small lg:label--base" data-notice="1" data-clamp="3">{{ image.notice | escape }}</span>{% endif %}
       <div class="flex flex--row flex--between flex--center-y gap--small w--full">
         <span class="label label--small grow" data-clamp="2">{{ image.credit | escape }}</span>
-        {% unless v_compact %}<span class="label label--small label--inverted rounded--full shrink-0">{{ image.position }}</span>{% endunless %}
+        {% unless v_compact %}<span class="label label--small lg:label--base label--inverted rounded--full shrink-0">{{ image.position }}</span>{% endunless %}
       </div>
     </div>{% endcapture %}
-{% capture pic %}{% comment %} inline style: no class exists for an image filter (sharpen, contrast, brightness) {% endcomment %}<img src="{{ image.image_url }}" class="image image--contain image-dither block w--full h--full" style="filter:url(#potd-sharpen) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />{% endcapture %}
+{% capture pic %}{% comment %} inline style: no class exists for an image filter (sharpen, contrast, brightness) {% endcomment %}<img src="{{ image.image_url }}" class="image image--{{ fit }} image-dither block w--full h--full" style="filter:url(#potd-sharpen) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />{% endcapture %}
 {% if show_desc == false %}
 {% comment %} text off: the picture alone, as large as it fits, with the credit in a small white box in a corner {% endcomment %}
 <div class="layout layout--center p--0">
   <div class="relative w--full h--full">
     {{ pic }}
-    <div class="absolute bottom--0 right--0 bg--white px--2 py--1" data-credit="1"><span class="label label--small text--black" data-clamp="1">{{ image.credit | escape }}</span></div>
+    <div class="absolute bottom--0 right--0 bg--white px--2 py--1" data-credit="1"><span class="label label--small lg:label--base text--black">{{ image.credit | escape }}</span></div>
   </div>
 </div>
 {% elsif v_compact and h_compact %}
@@ -39,34 +41,36 @@
   <div class="stretch-y min-h--0 border--h-black">{{ pic }}</div>
   <div class="flex flex--col flex--left gap--none px--3 py--2">
     <span class="title title--small">{{ image.title | escape }}</span>
-    <span class="label label--small" data-clamp="1">{{ image.credit | escape }}</span>
+    <span class="label label--small lg:label--base" data-clamp="1">{{ image.credit | escape }}</span>
   </div>
 </div>
 {% elsif image.flow == 'top' and v_compact == false %}
 {% comment %} a landscape picture: whole, at full width on top; the text under it in two columns {% endcomment %}
 <div class="layout layout--col gap--none p--0">
-  <div class="stretch-y h--[60cqh] shrink-0 pb--2">{{ pic }}</div>
+  <div class="stretch-y h--[0px] min-h--0 pb--2">{{ pic }}</div>
   <div class="border--h-black w--full shrink-0" data-rule="picture"></div>
-  <div class="flex flex--row gap--large p--3 stretch-y">
+  {% comment %} the text block: its content, at most 35% of the height; the picture gets the rest (inline style: the framework has no max-height class) {% endcomment %}
+  <div class="flex flex--row gap--large p--3 shrink-0 min-h--0" data-text="1" style="max-height:35cqh;overflow:hidden">
     <div class="flex flex--col flex--top flex--left gap--small self--stretch w--[35cqw] shrink-0">
       {{ hdr }}
       <span class="title title--small">{{ image.title | escape }}</span>
       <div class="grow"></div>
       {{ foot }}
     </div>
-    <div class="stretch grow min-w--0 min-h--0 potd-desc"><span class="description">{{ image.description | escape }}</span></div>
+    <div class="stretch grow min-w--0 min-h--0 potd-desc"><span class="description lg:description--base" data-clamp="{% if image.flow == 'top' %}6{% else %}12{% endif %}">{{ image.description | escape }}</span></div>
   </div>
 </div>
 {% else %}
 {% comment %} a portrait or square picture (or a half view): whole, beside the text column {% endcomment %}
-<div class="layout gap--none p--0">
-  <div class="stretch min-w--0 min-h--0 pr--2">{{ pic }}</div>
-  <div class="self--stretch flex flex--col flex--top flex--left gap--small p--3 shrink-0 border--v-black w--[{% if v_compact %}40{% else %}35{% endif %}cqw]">
+<div class="layout portrait:layout--col gap--none p--0">
+  <div class="stretch min-w--0 min-h--0 pr--2 portrait:pr--0 portrait:pb--2">{{ pic }}</div>
+  <div class="border--v-black shrink-0 portrait:hidden"></div>
+  <div class="self--stretch flex flex--col flex--top flex--left gap--small p--3 shrink-0 portrait:w--full w--[{% if v_compact %}40{% else %}35{% endif %}cqw]">
     {{ hdr }}
     <span class="title title--small">{{ image.title | escape }}</span>
     {{ foot }}
     {% comment %} last in the column: the script measures the space left under the blocks before it {% endcomment %}
-    <div class="grow min-h--0 potd-desc"><span class="description">{{ image.description | escape }}</span></div>
+    <div class="grow min-h--0 potd-desc"><span class="description lg:description--base" data-clamp="{% if image.flow == 'top' %}6{% else %}12{% endif %}">{{ image.description | escape }}</span></div>
   </div>
 </div>
 {% endif %}
@@ -77,6 +81,7 @@
     document.querySelectorAll('.potd-desc').forEach(function (box) {
       var t = box.firstElementChild;
       if (!t) return;
+      t.removeAttribute('data-clamp'); // the attribute is the fallback when this script does not run; the measured lines replace it
       t.style.display = 'block';
       t.style.webkitLineClamp = 'unset';
       t.style.maxHeight = 'none';
@@ -97,4 +102,53 @@
 })();
 </script>
 {% endunless %}
+<script>
+// Text off: the credit avoids the photo where it can. The picture is fitted with contain, so it can leave a margin in
+// its box. Free margin beside it (at least 140 px, credit in up to 3 lines): the credit stands there, level with the
+// picture's bottom. Else a margin under it that holds the credit in the lines it has: there, at the picture's right
+// edge. Only without room: on the picture's bottom right corner (white box, black text), at most 3 lines.
+(function () {
+  var MIN_SIDE = 140, MAX_LINES = 3;
+  function lines(box, t, width) {
+    box.style.maxWidth = width + 'px';
+    t.style.display = 'block';
+    t.style.webkitLineClamp = 'unset';
+    t.style.maxHeight = 'none';
+    var lh = parseFloat(getComputedStyle(t).lineHeight) || 16;
+    // offsetHeight is in the same layout pixels as lineHeight (getBoundingClientRect is scaled where the screen is zoomed)
+    return { n: Math.max(1, Math.round(t.offsetHeight / lh)), lh: lh };
+  }
+  function clamp(t, n, lh) {
+    t.style.display = '-webkit-box';
+    t.style.webkitBoxOrient = 'vertical';
+    t.style.overflow = 'hidden';
+    t.style.webkitLineClamp = String(n);
+    t.style.maxHeight = (n * lh) + 'px';
+  }
+  function place() {
+    document.querySelectorAll('[data-credit]').forEach(function (box) {
+      var img = box.parentElement.querySelector('img'), t = box.firstElementChild;
+      if (!img || !img.naturalWidth || !t) return;
+      var w = img.clientWidth, h = img.clientHeight, r = img.naturalWidth / img.naturalHeight, cover = getComputedStyle(img).objectFit === 'cover';
+      var dw = cover ? w : Math.min(w, h * r), dh = cover ? h : Math.min(h, w / r), mx = Math.floor((w - dw) / 2), my = Math.floor((h - dh) / 2);
+      var cs = getComputedStyle(box), padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight), padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      var m;
+      box.style.left = 'auto'; box.style.top = 'auto';
+      if (mx >= MIN_SIDE && (m = lines(box, t, mx - padX - 4)).n <= MAX_LINES) {
+        box.style.right = '0px'; box.style.bottom = my + 'px'; clamp(t, m.n, m.lh);
+      } else if (my >= 1 && (m = lines(box, t, Math.floor(dw) - padX)).n * m.lh + padY <= my) {
+        box.style.right = Math.floor(mx) + 'px'; box.style.bottom = Math.floor(my - (m.n * m.lh + padY)) + 'px'; clamp(t, m.n, m.lh);
+      } else {
+        m = lines(box, t, Math.round(dw * 2 / 3) - padX);
+        box.style.right = mx + 'px'; box.style.bottom = my + 'px'; clamp(t, Math.min(m.n, MAX_LINES), m.lh);
+      }
+    });
+  }
+  place();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+  window.addEventListener('load', place);
+  window.addEventListener('resize', place);
+  if (window.ResizeObserver) document.querySelectorAll('[data-credit]').forEach(function (b) { new ResizeObserver(function () { place(); }).observe(b.parentElement); });
+})();
+</script>
 {% endtemplate %}

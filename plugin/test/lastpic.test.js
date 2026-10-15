@@ -98,3 +98,33 @@ test('feed took 1 s: the metadata is fetched, the feed was not cut short', { tim
   assert.ok(urls.some((u) => /titles=File/.test(u)));
   assert.strictEqual(out.image.credit, 'Agnes Monkelbaan, CC BY-SA 4.0, Wikimedia Commons');
 });
+
+// What TRMNL's XML to JSON step hands over: entries as objects with the summary as text
+function asJson(xml) {
+  const entry = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].map(([, e]) => {
+    const g = (t) => (new RegExp(`<${t}[^>]*>([\\s\\S]*?)</${t}>`).exec(e) || [, ''])[1];
+    return { id: g('id'), title: g('title'), updated: g('updated'), summary: { type: 'html', '#text': g('summary').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&amp;/g, '&') }, author: { name: g('name') } };
+  });
+  return { feed: { entry } };
+}
+
+// ---- the feed arrives as polling data (fetched by TRMNL before the run, outside its 5 s limit)
+
+test('polling data: two feeds as IDX_0 / IDX_1, the first one failed: the picture comes from the second, no fetch of the feed', async () => {
+  const urls = [];
+  globalThis.fetch = stub({ throws: 'must not fetch the feed in run()' }, urls);
+  let out;
+  try { out = await run({ IDX_0: {}, IDX_1: asJson(atom), trmnl: { user: { locale: 'nl' } } }); } finally { globalThis.fetch = noFetch; }
+  assert.ok(out.image && out.image.position === '1 / 10', JSON.stringify(out).slice(0, 300));
+  assert.ok(!urls.some((u) => /featuredfeed/.test(u)), urls.join('\n'));
+});
+
+test('settings.yml: the feed is a polling url in the user language plus English, none for the day modes', () => {
+  const y = fs.readFileSync(path.join(__dirname, '..', 'src', 'settings.yml'), 'utf8');
+  const m = /polling_url: \|-\n([\s\S]*?)\npolling_headers/.exec(y);
+  assert.ok(m, 'polling_url block');
+  assert.match(m[1], /featuredfeed[^\n]*language=\{\{ l \}\}/);
+  assert.match(m[1], /language=en/);
+  assert.match(m[1], /mode == 'archive' or mode == 'on_this_day'/);
+  assert.match(m[1], /trmnl\.user\.locale/);
+});

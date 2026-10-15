@@ -7,7 +7,9 @@ polling_verb: get
 framework_version: 3.4.2
 serverless_language: node
 refresh_interval_floor:
-polling_url:
+polling_url: |-
+  {% if mode == 'archive' or mode == 'on_this_day' %}{% else %}{% assign l = trmnl.user.locale | slice: 0, 2 | downcase %}{% if l == blank %}{% assign l = 'en' %}{% endif %}https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language={{ l }}{% if l != 'en' %}
+  https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language=en{% endif %}{% endif %}
 polling_headers: ''
 polling_body: ''
 id: 507499
@@ -17,21 +19,29 @@ custom_fields:
 - keyname: author_bio
   field_type: author_bio
   name: About This Plugin
-  description: Shows the Wikimedia Commons Picture of the Day with its caption. Choose today's picture, the last ten days (in turn or at random), the same date in earlier years, or any day since 2004. The caption language follows your TRMNL account language.<br />Pictures are credited to Wikimedia Commons; each file has its own licence on its Commons page.
+  description: Shows the Wikimedia Commons Picture of the Day with its caption on your TRMNL. Choose today's picture, the last ten days (in turn or at random), the same date in earlier years, or any day since 2004; the caption language follows your TRMNL account language.<br />Pictures are credited to Wikimedia Commons; each file has its own licence on its Commons page.
   category: nature,art
-  github_url:
+  github_url: https://github.com/ExcuseMi/trmnl-wikimedia-potd-plugin
   learn_more_url: https://commons.wikimedia.org/wiki/Commons:Picture_of_the_day
 - keyname: mode
   field_type: select
-  name: Pictures
+  name: Which pictures
   default: today
-  help_text: Which picture each refresh shows.
+  help_text: 'Today: the newest picture. Last 10 days: the recent ones, one after another or at random. On this day: this date in an earlier year, a new year each refresh. Archive: a random day since 2004.'
   options:
-  - Today's picture: today
-  - The last 10 days, one after another: rotate
-  - The last 10 days, at random: random
-  - On this day in earlier years: on_this_day
-  - Any day since 2004 (archive): archive
+  - Today: today
+  - Last 10 days, in turn: rotate
+  - Last 10 days, random: random
+  - On this day: on_this_day
+  - Archive (since 2004): archive
+- keyname: picture_fit
+  field_type: select
+  name: Picture fit
+  default: contain
+  help_text: 'Whole picture: nothing is cut off, empty space may remain. Fill the area: the picture covers its area and the edges are cropped.'
+  options:
+  - Whole picture: contain
+  - Fill the area: cover
 - keyname: show_description
   field_type: boolean
   name: Show title and description

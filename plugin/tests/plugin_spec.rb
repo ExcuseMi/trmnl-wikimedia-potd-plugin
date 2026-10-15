@@ -71,20 +71,52 @@ RSpec.describe 'Wikimedia Commons Picture of the Day' do
               expect(page).to have_css('[data-credit]', text: CREDIT)
               expect(page).to have_no_text(TITLE)
               expect(page).to have_no_text('Picture of the day')
+              expect(page).to have_no_css('.title_bar')
               expect(page).to have_no_css('[data-rule], .title, .description, .border--v-black, .border--h-black')
+              # layout px: the screen can be zoomed, so rectangles are compared in their own (scaled) units
               box = page.evaluate(<<~JS)
                 (() => {
-                  const b = document.querySelector('[data-credit]'), t = b.firstElementChild;
-                  const i = document.querySelector('img.image').getBoundingClientRect(), r = b.getBoundingClientRect();
-                  return { bg: getComputedStyle(b).backgroundColor, fg: getComputedStyle(t).color,
-                           corner: Math.abs(r.right - i.right) < 2 && Math.abs(r.bottom - i.bottom) < 2,
+                  const b = document.querySelector('[data-credit]'), t = b.firstElementChild, im = document.querySelector('img.image');
+                  const ib = im.getBoundingClientRect(), r = b.getBoundingClientRect(), v = document.querySelector('.view').getBoundingClientRect();
+                  const ratio = im.naturalWidth / im.naturalHeight;
+                  const dw = Math.min(ib.width, ib.height * ratio), dh = Math.min(ib.height, ib.width / ratio);
+                  const pic = { left: ib.left + (ib.width - dw) / 2, right: ib.right - (ib.width - dw) / 2, top: ib.top + (ib.height - dh) / 2, bottom: ib.bottom - (ib.height - dh) / 2 };
+                  const overlap = r.left < pic.right - 1 && r.right > pic.left + 1 && r.top < pic.bottom - 1 && r.bottom > pic.top + 1;
+                  const scale = ib.width / im.clientWidth;
+                  return { bg: getComputedStyle(b).backgroundColor, fg: getComputedStyle(t).color, overlap,
+                           inside: r.left >= v.left - 1 && r.right <= v.right + 1 && r.top >= v.top - 1 && r.bottom <= v.bottom + 1,
+                           sideRoom: (ib.width - dw) / 2 / scale, underRoom: (ib.height - dh) / 2 / scale, boxH: r.height / scale,
+                           atCorner: Math.abs(r.right - pic.right) < 2 && Math.abs(r.bottom - pic.bottom) < 2,
+                           lines: Math.round(t.offsetHeight / (parseFloat(getComputedStyle(t).lineHeight) || 16)),
                            texts: [...document.querySelectorAll('.view *')].filter((e) => e.tagName !== 'SCRIPT' && [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())).length };
                 })()
               JS
               expect(box['bg']).to eq('rgb(255, 255, 255)')
               expect(box['fg']).to eq('rgb(0, 0, 0)')
-              expect(box['corner']).to be(true)
+              expect(box['inside']).to be(true)
+              expect(box['lines']).to be <= 3
+              # the credit avoids the photo when a margin of the size it needs exists; else it sits on the photo's corner
+              if box['sideRoom'] >= 140 || box['underRoom'] >= box['boxH']
+                expect(box['overlap']).to be(false)
+              else
+                expect(box['atCorner']).to be(true)
+              end
               expect(box['texts']).to eq(1)
+            end
+
+            it 'with the text off, a landscape picture in half_vertical has its credit under the picture, in half_horizontal beside it' do
+              next unless show == 'false' && shape == 'landscape' && %w[half_vertical half_horizontal].include?(view)
+
+              page.has_css?('img.image')
+              r = page.evaluate(<<~JS)
+                (() => {
+                  const b = document.querySelector('[data-credit]').getBoundingClientRect(), im = document.querySelector('img.image').getBoundingClientRect();
+                  const ratio = document.querySelector('img.image').naturalWidth / document.querySelector('img.image').naturalHeight;
+                  const dw = Math.min(im.width, im.height * ratio), dh = Math.min(im.height, im.width / ratio);
+                  return { under: b.top >= im.top + (im.height + dh) / 2 - 1, beside: b.left >= im.left + (im.width + dw) / 2 - 1 };
+                })()
+              JS
+              expect(view == 'half_vertical' ? r['under'] : r['beside']).to be(true)
             end
 
             it 'has no overflow and no page errors' do
@@ -141,6 +173,29 @@ RSpec.describe 'Wikimedia Commons Picture of the Day' do
           end
         end
       end
+    end
+  end
+
+  it 'picture_fit cover fills the picture area, contain (the default) never crops' do
+    cover = trmnl.render(view: 'full', device: 'v2', mocks: mocks_for(3000, 2000),
+                         custom_fields: custom_fields.merge('show_description' => 'true', 'picture_fit' => 'cover'))
+    expect(cover.evaluate("getComputedStyle(document.querySelector('img.image')).objectFit")).to eq('cover')
+    plain = trmnl.render(view: 'full', device: 'v2', mocks: mocks_for(3000, 2000), custom_fields: custom_fields.merge('show_description' => 'true'))
+    expect(plain.evaluate("getComputedStyle(document.querySelector('img.image')).objectFit")).to eq('contain')
+  end
+
+  # the reviewer's X render showed no text column: with the text on, the X full view has title, credit and description,
+  # and the picture still takes most of the height
+  %w[landscape portrait].each do |shape|
+    it "X full view, #{shape} picture, text on: title, credit and description are there, the picture is not squeezed" do
+      page = screen('full', 'v2', shape, 'true')
+      page.has_css?('img.image')
+      expect(page).to have_text(TITLE)
+      expect(page).to have_text(CREDIT)
+      expect(page).to have_text(DESC)
+      r = page.evaluate("(() => { const i = document.querySelector('img.image').getBoundingClientRect(), v = document.querySelector('.view').getBoundingClientRect(); return { h: i.height / v.height, w: i.width / v.width }; })()")
+      expect(shape == 'landscape' ? r['h'] : r['w']).to be > 0.6
+      expect(page).to have_no_overflow
     end
   end
 
