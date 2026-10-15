@@ -7,6 +7,7 @@
 
 var WIDTH = 1280; // a standard Wikimedia thumbnail step
 var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+var MAX_TITLE = 56;
 var COMMONS = 'https://commons.wikimedia.org';
 
 function decodeEntities(text) {
@@ -125,7 +126,11 @@ function nameToTitle(file) {
 function caption(html) {
   var m = /<div\b[^>]*class="[^"]*\bdescription\b[^"]*"[^>]*>([\s\S]*?)<\/div>/i.exec(html);
   var t = m ? plain(m[1]) : '';
-  return t.length > 220 ? t.slice(0, 217).trim() + '...' : t;
+  // One line in the title bar: the first sentence, cut at a word when still too long
+  var dot = /^(.{20,}?[.!?])\s/.exec(t);
+  if (dot && dot[1].length <= MAX_TITLE) t = dot[1];
+  if (t.length > MAX_TITLE) t = t.slice(0, MAX_TITLE - 3).replace(/\s+\S*$/, '') + '...';
+  return t;
 }
 
 /** Author and licence only when the summary carries them (elements with class author / licen*). */

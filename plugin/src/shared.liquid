@@ -1,0 +1,16 @@
+{% template main %}
+<div class="layout layout--col layout--center gap--none">
+  {% unless image.image_url %}
+  <span class="description">{{ notice | default: "No picture available right now. The next refresh tries again." }}</span>
+  {% else %}
+  <img src="{{ image.image_url }}" class="image image--contain image-dither w--[100cqw] h--[90cqh]" alt="{{ image.title | escape }}" />
+  <div class="label label--small text--center w--[100cqw]" data-clamp="1">{% if h_compact and v_compact %}Wikimedia Commons{% else %}{{ image.credit | escape }}{% endif %}</div>
+  {% endunless %}
+</div>
+<div class="title_bar">
+  <span class="title" data-clamp="1">{% if image.image_url %}{{ image.title | escape }}{% else %}{{ trmnl.plugin_settings.instance_name }}{% endif %}</span>
+  {% if image.image_url %}
+  <span class="instance">{{ image.position }}{% unless h_compact and v_compact %}{% if image.date_label != blank %} | {{ image.date_label }}{% endif %}{% endunless %}</span>
+  {% endif %}
+</div>
+{% endtemplate %}

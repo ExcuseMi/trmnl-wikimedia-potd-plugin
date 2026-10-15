@@ -45,6 +45,14 @@ test('caption from the summary, text only; file name when there is none', async 
   assert.strictEqual(noCaption.image.title, 'My nice été photo');
 });
 
+test('a long caption is cut to one title line, at the first sentence or a word', async () => {
+  const mk = (text) => '<feed><entry><id>x/potd/20261001000000/en</id><updated>2026-10-01T00:00:00Z</updated><summary>&lt;img src=&quot;https://thumb.wikimedia.org/a/330px-A.jpg&quot;&gt;&lt;div class=&quot;description en&quot;&gt;' + text + '&lt;/div&gt;</summary></entry></feed>';
+  const sentence = await run({ data: mk('White teatfish at Ras Muhammad. This species of sea cucumber is found in shallow waters near islands and reefs.') });
+  assert.strictEqual(sentence.image.title, 'White teatfish at Ras Muhammad.');
+  const words = await run({ data: mk('word '.repeat(60)) });
+  assert.ok(words.image.title.length <= 56 && words.image.title.endsWith('...'), words.image.title);
+});
+
 test('credit always names Wikimedia Commons; author and licence only when known', async () => {
   const plainOut = await run({ data: atom });
   assert.strictEqual(plainOut.image.credit, 'Wikimedia Commons');
