@@ -7,7 +7,7 @@ polling_verb: get
 framework_version: 3.4.2
 serverless_language: node
 refresh_interval_floor: '5'
-polling_url: "{% if mode == 'archive' or mode == 'on_this_day' %}{% else %}{% assign l = trmnl.user.locale | slice: 0, 2 | downcase %}{% if l == blank %}{% assign l = 'en' %}{% endif %}https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language={{ l }}{% if l != 'en' %}\r\nhttps://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language=en{% endif %}{% endif %}"
+polling_url: "{% if mode == 'archive' or mode == 'on_this_day' %}{% else %}{% if language != blank and language != 'auto' %}{% assign l = language %}{% else %}{% assign l = trmnl.user.locale | slice: 0, 2 | downcase %}{% endif %}{% if l == blank %}{% assign l = 'en' %}{% endif %}https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language={{ l }}{% if l != 'en' %}\r\nhttps://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language=en{% endif %}{% endif %}"
 polling_headers: ''
 polling_body: ''
 id: 507499
@@ -40,6 +40,26 @@ custom_fields:
   options:
   - Whole picture: contain
   - Fill the area: cover
+- keyname: language
+  field_type: select
+  name: Language
+  default: auto
+  optional: true
+  help_text: "The language of the title and description.<br /><b>Account language</b>: the language of your TRMNL account.<br />A language without a text for a picture falls back to English."
+  options:
+  - Account language: auto
+  - English: en
+  - Nederlands: nl
+  - Deutsch: de
+  - Français: fr
+  - Español: es
+  - Italiano: it
+  - Português: pt
+  - Polski: pl
+  - 日本語: ja
+  - Русский: ru
+  - Svenska: sv
+  - Čeština: cs
 - keyname: show_description
   field_type: boolean
   name: Show title and description

@@ -121,10 +121,12 @@ test('polling data: two feeds as IDX_0 / IDX_1, the first one failed: the pictur
 
 test('settings.yml: the feed is a polling url in the user language plus English, none for the day modes', () => {
   const y = fs.readFileSync(path.join(__dirname, '..', 'src', 'settings.yml'), 'utf8');
-  const m = /polling_url: \|-\n([\s\S]*?)\npolling_headers/.exec(y);
+  // a block (as written here) or one quoted line (as TRMNL stores it on pull)
+  const m = /polling_url: ([\s\S]*?)\npolling_headers/.exec(y);
   assert.ok(m, 'polling_url block');
   assert.match(m[1], /featuredfeed[^\n]*language=\{\{ l \}\}/);
   assert.match(m[1], /language=en/);
   assert.match(m[1], /mode == 'archive' or mode == 'on_this_day'/);
   assert.match(m[1], /trmnl\.user\.locale/);
+  assert.match(m[1], /language != 'auto'/); // the language setting overrides the locale
 });

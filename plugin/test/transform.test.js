@@ -232,6 +232,25 @@ for (const [locale, want] of [['nl', 'nl'], ['nl-BE', 'nl'], ['pt_BR', 'pt'], ['
   });
 }
 
+// The language setting overrides the account locale; "auto" or an unknown value follows the locale (owner 2026-10-15)
+for (const [setting, locale, want] of [['de', 'nl', 'de'], ['auto', 'nl', 'nl'], ['xx', 'fr', 'fr'], [undefined, 'sv', 'sv'], ['en', 'nl', 'en']]) {
+  test(`language setting ${JSON.stringify(setting)} with locale ${locale} asks Commons for ${want}`, async () => {
+    const urls = [];
+    globalThis.fetch = async (u) => {
+      urls.push(String(u));
+      if (/featuredfeed/.test(u)) return { ok: true, text: async () => atom };
+      return okFetch(meta)();
+    };
+    try {
+      const values = setting === undefined ? {} : { language: setting };
+      const out = await run({ trmnl: { user: { locale }, plugin_settings: { custom_fields_values: values } } });
+      assert.ok(out.image, JSON.stringify(out));
+      assert.ok(urls.some((u) => u.includes('featuredfeed') && u.endsWith('language=' + want)), urls.join('\n'));
+      assert.ok(urls.some((u) => u.includes('uselang=' + want + '&')), urls.join('\n'));
+    } finally { globalThis.fetch = async () => { throw new Error('no network in tests'); }; }
+  });
+}
+
 test('feed fetch fails or is slow: a notice, the saved state back, no crash', async () => {
   globalThis.fetch = () => new Promise(() => {});
   try {

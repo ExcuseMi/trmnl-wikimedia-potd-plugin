@@ -258,8 +258,14 @@ async function fileMeta(link, lang, deadline) {
   }
 }
 
-/** Language from the user's TRMNL locale ("nl", "nl-BE", "pt_BR"); English when missing or not in FEED_LANGS. */
+/**
+ * Language: the "language" setting when it names one of FEED_LANGS, else the user's TRMNL locale ("nl", "nl-BE",
+ * "pt_BR"); English when neither gives a supported one.
+ */
 function langOf(input) {
+  var set = input && input.trmnl && input.trmnl.plugin_settings && input.trmnl.plugin_settings.custom_fields_values;
+  var pick = String((set && set.language) || '').toLowerCase();
+  if (pick !== 'auto' && FEED_LANGS.indexOf(pick) >= 0) return pick;
   var loc = input && input.trmnl && input.trmnl.user && input.trmnl.user.locale;
   var l = String(loc || '').split(/[-_]/)[0].toLowerCase();
   return FEED_LANGS.indexOf(l) >= 0 ? l : 'en';
