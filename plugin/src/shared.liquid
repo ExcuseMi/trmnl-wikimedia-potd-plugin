@@ -18,7 +18,7 @@
       <span class="label label--small grow" data-clamp="2">{{ image.credit | escape }}</span>
       {% unless v_compact %}<span class="label label--small label--inverted rounded--full shrink-0">{{ image.position }}</span>{% endunless %}
     </div>{% endcapture %}
-{% capture pic %}{% comment %} inline style: no class exists for an image filter (sharpen, contrast, brightness) {% endcomment %}<img src="{{ image.image_url }}" class="image image--contain image-dither w--full h--full" style="filter:url(#potd-sharpen) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />{% endcapture %}
+{% capture pic %}{% comment %} inline style: no class exists for an image filter (sharpen, contrast, brightness) {% endcomment %}<img src="{{ image.image_url }}" class="image image--contain image-dither block w--full h--full" style="filter:url(#potd-sharpen) contrast(1.35) brightness(1.04)" alt="{{ image.title | escape }}" />{% endcapture %}
 {% if v_compact and h_compact %}
 <div class="layout layout--center p--0">
   {{ pic }}
@@ -37,28 +37,54 @@
   <div class="stretch-y h--[60cqh] shrink-0">{{ pic }}</div>
   <div class="border--h-black w--full shrink-0" data-rule="picture"></div>
   <div class="flex flex--row gap--large p--3 stretch-y">
-    <div class="stretch flex flex--col flex--top flex--left gap--small {% if show_desc %}w--[38cqw] shrink-0{% else %}grow{% endif %}">
+    <div class="flex flex--col flex--top flex--left gap--small {% if show_desc %}self--stretch w--[35cqw] shrink-0{% else %}stretch{% endif %}">
       {{ hdr }}
       <span class="title title--small">{{ image.title | escape }}</span>
       <div class="grow"></div>
       {{ foot }}
     </div>
-    {% if show_desc %}<div class="stretch grow min-w--0" data-content-limiter="true"><span class="description">{{ image.description | escape }}</span></div>{% endif %}
+    {% if show_desc %}<div class="stretch grow min-w--0 min-h--0 potd-desc"><span class="description">{{ image.description | escape }}</span></div>{% endif %}
   </div>
 </div>
 {% else %}
 {% comment %} a portrait or square picture (or a half view): whole, beside the text column {% endcomment %}
 <div class="layout gap--none p--0">
-  <div class="grow min-w--0 min-h--0">{{ pic }}</div>
-  <div class="stretch flex flex--col flex--top flex--left gap--small p--3 shrink-0 border--v-black w--[{% if v_compact %}40{% else %}36{% endif %}cqw]">
+  <div class="stretch min-w--0 min-h--0">{{ pic }}</div>
+  <div class="self--stretch flex flex--col flex--top flex--left gap--small p--3 shrink-0 border--v-black w--[{% if v_compact %}40{% else %}35{% endif %}cqw]">
     {{ hdr }}
     <span class="title title--small">{{ image.title | escape }}</span>
     {% unless show_desc %}<div class="grow"></div>{% endunless %}
     {{ foot }}
-    {% if show_desc %}{% comment %} last in the column: the limiter measures the space left under the blocks before it {% endcomment %}
-    <div class="grow" data-content-limiter="true"><span class="description">{{ image.description | escape }}</span></div>{% endif %}
+    {% if show_desc %}{% comment %} last in the column: the script measures the space left under the blocks before it {% endcomment %}
+    <div class="grow min-h--0 potd-desc"><span class="description">{{ image.description | escape }}</span></div>{% endif %}
   </div>
 </div>
 {% endif %}
+<script>
+// Description: native size class, whole lines only. Measure the box, clamp to the lines that fit (no scaled font: it dithers to hatching).
+(function () {
+  function fit() {
+    document.querySelectorAll('.potd-desc').forEach(function (box) {
+      var t = box.firstElementChild;
+      if (!t) return;
+      t.style.display = 'block';
+      t.style.webkitLineClamp = 'unset';
+      t.style.maxHeight = 'none';
+      var lh = parseFloat(getComputedStyle(t).lineHeight) || 16;
+      var n = Math.floor((box.getBoundingClientRect().height + 0.5) / lh);
+      t.style.visibility = n < 1 ? 'hidden' : 'visible';
+      if (n < 1) n = 1;
+      t.style.display = '-webkit-box';
+      t.style.webkitBoxOrient = 'vertical';
+      t.style.overflow = 'hidden';
+      t.style.webkitLineClamp = String(n);
+      t.style.maxHeight = (n * lh) + 'px';
+    });
+  }
+  fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  window.addEventListener('load', fit);
+})();
+</script>
 {% endunless %}
 {% endtemplate %}

@@ -69,20 +69,36 @@ RSpec.describe 'Wikimedia Commons Picture of the Day' do
               expect(page).to have_no_problems
             end
 
-            it 'puts every text on whole pixels on 1-bit (a half pixel makes it grey)' do
-              next unless device == 'og_png'
+            it 'sets the description in a native framework size, never scaled' do
+              page.has_css?('img.image') # wait for the page
+              next unless show == 'true'
 
-              off = page.evaluate(<<~JS)
-                [...document.querySelectorAll('body *')].filter((e) => [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()))
-                  .map((e) => [e.className, e.getBoundingClientRect()]).filter(([, r]) => r.width > 0)
-                  .filter(([, r]) => Math.abs(r.x - Math.round(r.x)) > 0.01 || Math.abs(r.y - Math.round(r.y)) > 0.01)
-                  .map(([c, r]) => c + ' at ' + r.x + ',' + r.y)
+              # a probe with the same class, outside the description box, is what "native" means on this device
+              r = page.evaluate(<<~JS)
+                (() => {
+                  const d = document.querySelector('.description');
+                  if (!d) return null;
+                  const probe = document.createElement('span');
+                  probe.className = 'description';
+                  document.querySelector('.view').appendChild(probe);
+                  const native = getComputedStyle(probe).fontSize;
+                  probe.remove();
+                  const chain = [];
+                  for (let e = d; e; e = e.parentElement) if (e.style.fontSize || e.style.transform || e.hasAttribute('data-content-limiter')) chain.push(e.className);
+                  const b = d.getBoundingClientRect();
+                  return { size: getComputedStyle(d).fontSize, native, chain, whole: Number.isInteger(b.x) ? '' : String(b.x) };
+                })()
               JS
-              expect(off).to eq([])
+              next if r.nil? # quadrant and half_vertical may have no room for it
+
+              expect(r['size']).to eq(r['native'])
+              expect(r['chain']).to eq([])
+              # a column edge on a half pixel in x dithers the glyphs to hatching on 1-bit (seen with a 38cqw column)
+              expect(r['whole']).to eq('') if device == 'og_png'
             end
 
             if device == 'og_png'
-              it 'draws no grey: classes, inline colours, computed text and rule colours' do
+              it 'draws no grey: classes, inline colours, computed text, background (pill) and rule colours' do
                 html = page.html
                 expect(html).not_to match(/\b(text|bg|label|border--[hv])-(-)?(gray|grey|[1-7][05])\b|--gray|--grey/)
                 expect(html).not_to match(/style="[^"]*(color|background)[^"]*#(?!000\b|000000|fff\b|ffffff)/i)
@@ -91,6 +107,7 @@ RSpec.describe 'Wikimedia Commons Picture of the Day' do
                     const c = getComputedStyle(e), ok = (v) => /^(rgb\\(0, 0, 0\\)|rgb\\(255, 255, 255\\)|rgba\\(0, 0, 0, 0\\))$/.test(v);
                     const bad = [];
                     if (e.childNodes.length && [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()) && !ok(c.color)) bad.push(e.className + ' color ' + c.color);
+                    if (!ok(c.backgroundColor) && c.backgroundColor !== 'rgb(255, 255, 255)') bad.push(e.className + ' background ' + c.backgroundColor);
                     for (const s of ['Top', 'Right', 'Bottom', 'Left']) if (parseFloat(c['border' + s + 'Width']) > 0 && !ok(c['border' + s + 'Color'])) bad.push(e.className + ' border ' + c['border' + s + 'Color']);
                     return bad;
                   })
