@@ -76,7 +76,8 @@
 {% comment %} TRMNL's standard title bar: the plugin icon (black, inline: no network on the device) and the name the user gave it {% endcomment %}
 <div class="title_bar">
   <img class="image" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0Ij4gIDx0aXRsZT5QaWN0dXJlIG9mIHRoZSBEYXk8L3RpdGxlPiAgPCEtLSBwaG90byBmcmFtZSAtLT4gIDxyZWN0IHg9IjQiIHk9IjEyIiB3aWR0aD0iNDYiIGhlaWdodD0iMzgiIHJ4PSI0IiBmaWxsPSIjZmZmZmZmIi8+ICA8cmVjdCB4PSI0IiB5PSIxMiIgd2lkdGg9IjQ2IiBoZWlnaHQ9IjM4IiByeD0iNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjQiLz4gIDwhLS0gc3VuIGFuZCBoaWxscyAtLT4gIDxjaXJjbGUgY3g9IjE4IiBjeT0iMjQiIHI9IjQuNSIgZmlsbD0iIzAwMDAwMCIvPiAgPHBhdGggZD0iTTggNDYgTDIyIDMyIEwzMCA0MCBMMzggMzAgTDQ2IDQwIEw0NiA0NiBaIiBmaWxsPSIjMDAwMDAwIi8+ICA8IS0tIGRheSBiYWRnZSAtLT4gIDxjaXJjbGUgY3g9IjQ4IiBjeT0iNDgiIHI9IjE0IiBmaWxsPSIjMDAwMDAwIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMi41Ii8+ICA8cGF0aCBkPSJNNDggNDEgVjQ4IEw1MyA1MSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+" alt="" />
-  <span class="title">{{ trmnl.plugin_settings.instance_name | default: "Picture of the day" }}</span>
+  {% comment %} narrow views (half vertical, quadrant): only the day fits next to the icon {% endcomment %}
+  {% unless h_compact %}<span class="title">{{ trmnl.plugin_settings.instance_name | default: "Picture of the day" }}</span>{% endunless %}
   {% if image.date_label != blank %}<span class="instance">{{ image.date_label }}</span>{% endif %}
 </div>
 {% endif %}
@@ -91,8 +92,10 @@
       t.style.display = 'block';
       t.style.webkitLineClamp = 'unset';
       t.style.maxHeight = 'none';
-      var lh = parseFloat(getComputedStyle(t).lineHeight) || 16;
-      var n = Math.floor((box.getBoundingClientRect().height + 0.5) / lh);
+      var cs = getComputedStyle(t), lh = parseFloat(cs.lineHeight) || Math.round(parseFloat(cs.fontSize) * 1.25) || 16;
+      // clientHeight is in layout pixels like lineHeight; getBoundingClientRect is scaled where the screen is zoomed (the
+      // X), which counted too many lines there and the row's overflow cut the last one in half (2026-10-16)
+      var n = Math.floor((box.clientHeight + 0.5) / lh);
       t.style.visibility = n < 1 ? 'hidden' : 'visible';
       if (n < 1) n = 1;
       t.style.display = '-webkit-box';
