@@ -4,7 +4,7 @@ no_screen_padding: 'no'
 dark_mode: 'no'
 static_data: ''
 polling_verb: get
-framework_version: 3.4.2
+framework_version: latest
 serverless_language: node
 refresh_interval_floor: '5'
 polling_url: "{% if mode == 'archive' or mode == 'on_this_day' %}{% else %}{% if language != blank and language != 'auto' %}{% assign l = language %}{% else %}{% assign l = trmnl.user.locale | slice: 0, 2 | downcase %}{% endif %}{% if l == blank %}{% assign l = 'en' %}{% endif %}https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language={{ l }}{% if l != 'en' %}\r\nhttps://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=atom&language=en{% endif %}{% endif %}"
@@ -36,7 +36,7 @@ custom_fields:
   field_type: select
   name: Picture fit
   default: contain
-  help_text: "<b>Whole picture</b>: nothing is cut off, empty space may remain.<br /><b>Fill the area</b>: the picture covers its area, the edges are cropped."
+  help_text: "<b>Whole picture</b>: nothing is cut off, empty space may remain.<br /><b>Fill the area</b>: the picture covers its area, the edges are cropped. On trmnl.com the crop follows the picture's subject (faces first, otherwise the main subject)."
   options:
   - Whole picture: contain
   - Fill the area: cover
